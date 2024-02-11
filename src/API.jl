@@ -1,6 +1,8 @@
 """
 A process subtype `p::Process` extends the functions:
-- `lhs_variable(p)` which returns the variable the process describes (left-hand-side variable)
+- `lhs_variable(p)` which returns the variable the process describes
+  (left-hand-side variable). There is a default implementation
+  `lhs_variable(p) = p.variable` if the field exists.
 - `rhs(p)` which is the right-hand-side expression, i.e., the "actual" process.
 - (optional) `timescale`, which defaults to [`NoTimeVariability`](@ref).
 - (optional) `lhs(p)` which returns the left-hand-side. Let `τ = timescale(p)`.
@@ -18,6 +20,8 @@ abstract type Process end
 
 Singleton value that is the default output of the [`timescale`](@ref) function
 for variables that do not vary in time autonomously (i.e., no d/dt derivative).
+Note that explicit time dependence of the form `x(t) = cos(t)` is still
+`NoTimeVariability()`.
 """
 struct NoTimeVariability end
 
