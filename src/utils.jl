@@ -1,0 +1,92 @@
+export print_system_info, has_variable, default_value
+export new_derived_named_parameter, @named_parameters
+
+"""
+    has_variable(eq, var)
+
+Return `true` if variable `var` exists in the equation(s) `eq`, `false` otherwise.
+Function works irrespectively if `var` is an `@variable` or `@parameter`.
+"""
+function has_variable(eq::Equation, var)
+    vars = get_variables(eq)
+    return any(isequal(var), vars)
+end
+has_variable(eqs, var) = any(eq -> has_variable(eq, var), eqs)
+
+default_value(x) = x
+default_value(x::Num) = default_value(x.val)
+function default_value(x::ModelingToolkit.SymbolicUtils.Symbolic)
+    if haskey(x.metadata, ModelingToolkit.Symbolics.VariableDefaultValue)
+        return x.metadata[ModelingToolkit.Symbolics.VariableDefaultValue]
+    else
+        @warn("No default value assigned to variable/parameter $(x).")
+        return nothing
+    end
+end
+# trick to get default values for state variables:
+# Base.Fix1(getindex, ModelingToolkit.defaults(ssys)).(states(ssys))
+# while `defaults` returns all default assignments.
+
+is_variable(x::Num) = is_variable(x.val)
+function is_variable(x)
+    if x isa ModelingToolkit.SymbolicUtils.Symbolic
+        if isnothing(x.metadata)
+            return false
+        end
+        if haskey(x.metadata, ModelingToolkit.Symbolics.VariableSource)
+            src = x.metadata[ModelingToolkit.Symbolics.VariableSource]
+            return first(src) == :variables
+        end
+    end
+    return false
+end
+
+"""
+    new_derived_named_parameter(variable, value, extra::String, suffix = true)
+
+If `value isa Num`, return `value`. Otherwise, create a new MTK `@parameter`
+whose name is created from `variable` by adding the `extra` string.
+If `suffix = true` the extra is added at the end after a `_`. Otherwise
+it is added at the start, then a `_` and then the variable name.
+"""
+new_derived_named_parameter(v, value::Num, extra, suffix = true) = value
+function new_derived_named_parameter(v, value::Real, extra, suffix = true)
+    n = string(ModelingToolkit.getname(v))
+    newstring = if suffix
+        n*"_"*extra
+    else
+        extra*"_"*n
+    end
+    new_derived_named_parameter(newstring, value)
+end
+function new_derived_named_parameter(newstring::String, value::Real)
+    varsymbol = Symbol(newstring)
+    dummy = (@parameters $(varsymbol) = value)
+    return first(dummy)
+end
+
+"""
+    @named_parameters vars...
+
+Convert all Julia variables `vars` into `@parameters` with name the same as `vars`
+and default value the same as the value of `vars`.
+"""
+macro named_parameters(vars...)
+    return quote
+        out = []
+        for v in vars
+            res = (ModelingToolkit.toparam)((Symbolics.wrap)((Symbolics.SymbolicUtils.setmetadata)((Symbolics.setdefaultval)((Sym){Real}($(QuoteNode(v))), $(esc(v))), Symbolics.VariableSource, (:parameters, $(QuoteNode(v))))))
+            push!(out, res)
+        end
+        $(out...)
+    end
+end
+
+# This may help:
+
+# julia> @macroexpand @parameters A=0.1 B=0.1
+# quote
+#     A = (ModelingToolkit.toparam)((Symbolics.wrap)((SymbolicUtils.setmetadata)((Symbolics.setdefaultval)((Sym){Real}(:A), 0.1), Symbolics.VariableSource, (:parameters, :A))))
+#     B = (ModelingToolkit.toparam)((Symbolics.wrap)((SymbolicUtils.setmetadata)((Symbolics.setdefaultval)((Sym){Real}(:B), 0.1), Symbolics.VariableSource, (:parameters, :B))))
+#     [A, B]
+# end

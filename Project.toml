@@ -1,0 +1,12 @@
+name = "ProcessBasedModelling"
+uuid = "ca969041-2cf3-4b10-bc21-86f4417093eb"
+authors = ["Datseris <datseris.george@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
+Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
+
+[compat]
+ModelingToolkit = "8.73"
+Reexport = "1.2"
