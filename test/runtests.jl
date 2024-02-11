@@ -25,6 +25,25 @@ using OrdinaryDiffEq
         return absorbed_shortwave - emitted_longwave
     end
 
+    # make a new type of process
+    struct TanhProcess <: Process
+        variable
+        driver_variable
+        left
+        right
+        scale
+        reference
+    end
+    function ProcessBasedModelling.rhs(p::TanhProcess)
+        x = p.driver_variable
+        (; left, right, scale, reference) = p
+        return tanh_expression(x, left, right, scale, reference)
+    end
+    function tanh_expression(T, left, right, scale, reference)
+        return left + (right - left)*(1 + tanh(2(T - reference)/(scale)))*0.5
+    end
+
+
     processes = [
         TanhProcess(α, T, 0.7, 0.289, 10.0, 274.5),
         TanhProcess(ε, T, 0.5, 0.41, 2.0, 288.0),
