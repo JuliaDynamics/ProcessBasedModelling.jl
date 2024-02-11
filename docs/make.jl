@@ -10,11 +10,7 @@ Downloads.download(
 include("build_docs_with_style.jl")
 
 pages =  [
-    "Introduction" => "index.md",
-    "Overarching tutorial" => "tutorial.md",
-    "Contents" => "contents.md",
-    "Animations, GUIs, Visuals" => "visualizations.md",
-    "Contributor Guide" => "contributors_guide.md",
+    "Documentation" => "index.md",
 ]
 
 build_docs_with_style(pages, ProcessBasedModelling;
