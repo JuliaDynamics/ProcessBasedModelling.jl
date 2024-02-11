@@ -163,8 +163,6 @@ This API describes how you can implement your own `Process` subtype, if the [exi
 
 ```@docs
 Process
-rhs
-timescale
 NoTimeDerivative
 ```
 

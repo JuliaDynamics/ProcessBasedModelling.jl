@@ -1,5 +1,5 @@
 """
-A process subtype `p::Process` extends the functions:
+A process subtype `p::Process` extends the `ProcessBasedModelling` unexported functions:
 - `lhs_variable(p)` which returns the variable the process describes
   (left-hand-side variable). There is a default implementation
   `lhs_variable(p) = p.variable` if the field exists.
@@ -19,7 +19,7 @@ abstract type Process end
 """
     NoTimeDerivative()
 
-Singleton value that is the default output of the [`timescale`](@ref) function
+Singleton value that is the default output of the `timescale` function
 for variables that do not vary in time autonomously, i.e., they have no d/dt derivative
 and hence the concept of a "timescale" does not apply to them.
 """
