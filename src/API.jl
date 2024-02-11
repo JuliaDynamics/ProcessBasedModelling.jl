@@ -4,10 +4,10 @@ A process subtype `p::Process` extends the functions:
   (left-hand-side variable). There is a default implementation
   `lhs_variable(p) = p.variable` if the field exists.
 - `rhs(p)` which is the right-hand-side expression, i.e., the "actual" process.
-- (optional) `timescale`, which defaults to [`NoTimeVariability`](@ref).
+- (optional) `timescale`, which defaults to [`NoTimeDerivative`](@ref).
 - (optional) `lhs(p)` which returns the left-hand-side. Let `τ = timescale(p)`.
   Then `lhs(p)` behavior depends on `τ` as follows:
-  - Just `lhs_variable(p)` if `τ == NoTimeVariability()`.
+  - Just `lhs_variable(p)` if `τ == NoTimeDerivative()`.
   - `Differential(t)(p)` if `τ == nothing`.
   - `τ_var*Differential(t)(p)` if `τ isa Union{Real, Num}`. If real,
     a new named parameter `τ_var` is created that has the prefix `:τ_` and then the
@@ -16,14 +16,13 @@ A process subtype `p::Process` extends the functions:
 abstract type Process end
 
 """
-    NoTimeVariability()
+    NoTimeDerivative()
 
 Singleton value that is the default output of the [`timescale`](@ref) function
-for variables that do not vary in time autonomously (i.e., no d/dt derivative).
-Note that explicit time dependence of the form `x(t) = cos(t)` is still
-`NoTimeVariability()`.
+for variables that do not vary in time autonomously, i.e., they have no d/dt derivative
+and hence the concept of a "timescale" does not apply to them.
 """
-struct NoTimeVariability end
+struct NoTimeDerivative end
 
 function lhs_variable(p::Process)
     if !hasfield(typeof(p), :variable)
@@ -33,14 +32,14 @@ function lhs_variable(p::Process)
     end
 end
 
-timescale(::Process) = NoTimeVariability()
+timescale(::Process) = NoTimeDerivative()
 
 function lhs(p::Process)
     τ = timescale(p)
     v = lhs_variable(p)
     if isnothing(τ) # time variability exists but timescale is nonexistent (unity)
         return Differential(t)(v)
-    elseif τ isa NoTimeVariability || iszero(τ) # no time variability
+    elseif τ isa NoTimeDerivative || iszero(τ) # no time variability
         return v
     else # τ is either Num or Real
         τvar = new_derived_named_parameter(v, τ, "τ", false)

@@ -165,7 +165,7 @@ This API describes how you can implement your own `Process` subtype, if the [exi
 Process
 rhs
 timescale
-NoTimeVariability
+NoTimeDerivative
 ```
 
 ## Utility functions
