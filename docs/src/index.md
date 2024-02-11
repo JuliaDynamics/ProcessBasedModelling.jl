@@ -8,9 +8,11 @@ ProcessBasedModelling
 
 ## Usage
 
-In ProcessBasedModelling.jl, each variable is governed by a "process", which in code is just a symbolic expression from ModellingToolkit.jl.
-To coupled the variable with the process it is governed by, a user either defines simple equations of the form `variable ~ expression`, or creates an instance of [`Process`](@ref) if the left-hand-side of the equation needs to be anything more complex.
-Once all the processes about the physical system are collected, they are given as a `Vector` to the [`processes_to_mtkmodel`](@ref) central function. This function also defines what quantifies as a "process".
+In ProcessBasedModelling.jl, each variable is governed by a "process".
+Conceptually this is just an equation that _defines_ the given variable.
+To couple the variable with the process it is governed by, a user either defines simple equations of the form "variable = expression", or creates an instance of [`Process`](@ref) if the left-hand-side of the equation needs to be anything more complex. In either case, the variable and the expression are both _symbolic expressions_ created via ModellingToolkit.jl (more specifically, via Symbolics.jl).
+
+Once all the processes about the physical system are collected, they are given as a `Vector` to the [`processes_to_mtkmodel`](@ref) central function. This function also defines what quantifies as a "process" in more specificity.
 
 ## Example
 
@@ -108,6 +110,16 @@ equations(model)
 ```@example MAIN
 parameters(model)
 ```
+
+Lastly, [`processes_to_mtkmodel`](@ref) also allows the concept of "default" processes, that can be used for introduced "process-less" variables.
+For example,
+
+```@example MAIN
+model = processes_to_mtkmodel(processes[1:2], processes[3:3])
+equations(model)
+```
+
+does not throw any warnings as it obtained a process for ``y`` from the given default processes.
 
 ### Special handling of timescales
 
