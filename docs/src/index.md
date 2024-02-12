@@ -171,6 +171,7 @@ ProcessBasedModelling.lhs
 ## Utility functions
 
 ```@docs
+default_value
 has_variable
 new_derived_named_parameter
 ```

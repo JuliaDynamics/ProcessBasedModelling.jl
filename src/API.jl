@@ -7,7 +7,7 @@ A process subtype `p::Process` extends the following unexported functions:
 - `rhs(p)` which is the right-hand-side expression, i.e., the "actual" process.
 - (optional) `timescale`, which defaults to [`NoTimeDerivative`](@ref).
 - (optional) `lhs(p)` which returns the left-hand-side. Let `τ = timescale(p)`.
-  Then default `lhs(p)` behavior depends on `τ` as follows:
+  Then default `lhs(p)` behaviour depends on `τ` as follows:
   - Just `lhs_variable(p)` if `τ == NoTimeDerivative()`.
   - `Differential(t)(p)` if `τ == nothing`.
   - `τ_var*Differential(t)(p)` if `τ isa Union{Real, Num}`. If real,
@@ -18,7 +18,7 @@ A process subtype `p::Process` extends the following unexported functions:
 abstract type Process end
 
 """
-    NoTimeDerivative()
+    ProcessBasedModelling.NoTimeDerivative()
 
 Singleton value that is the default output of the [`timescale`](@ref) function
 for variables that do not vary in time autonomously, i.e., they have no d/dt derivative

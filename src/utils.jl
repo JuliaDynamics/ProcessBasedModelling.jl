@@ -1,6 +1,3 @@
-export print_system_info, has_variable, default_value
-export new_derived_named_parameter, @named_parameters
-
 """
     has_variable(eq, var)
 
@@ -13,6 +10,12 @@ function has_variable(eq::Equation, var)
 end
 has_variable(eqs, var) = any(eq -> has_variable(eq, var), eqs)
 
+"""
+    default_value(x)
+
+Return the default value of a symbolic variable `x` or `nothing`
+if it doesn't have any. Return `x` if `x` is not a symbolic variable.
+"""
 default_value(x) = x
 default_value(x::Num) = default_value(x.val)
 function default_value(x::ModelingToolkit.SymbolicUtils.Symbolic)
