@@ -30,7 +30,6 @@ include("processes_basic.jl")
 
 # TODO: Perhaps not don't export `t, rhs`?
 export t
-export lhs_variable, rhs, timescale, NoTimeVariability
 export Process, ParameterProcess, TimeDerivative, ExpRelaxation
 export processes_to_mtkmodel
 export new_derived_named_parameter

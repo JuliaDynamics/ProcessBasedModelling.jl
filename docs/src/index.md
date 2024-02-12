@@ -30,6 +30,7 @@ symbolically using ModelingToolkit.jl (**MTK**). We define
 using ModelingToolkit
 using OrdinaryDiffEq: Tsit5
 
+@variables t # independent variable
 @variables z(t) = 0.0
 @variables x(t) # no default value
 @variables y(t) = 0.0
@@ -38,7 +39,6 @@ ProcessBasedModelling.jl (**PBM**) strongly recommends that all defined variable
 
 To make the equations we want, we can use MTK directly, and call
 ```@example MAIN
-@variables t
 
 eqs = [
   Differential(t)(z) ~ x^2 - z
@@ -71,28 +71,26 @@ end
 
 Interestingly, the error is wrong. ``x`` is defined and has an equation, at least on the basis of our scientific reasoning. However ``y`` that ``x`` introduced does not have an equation. Moreover, in our experience these errors messages become increasingly less useful when a model has many equations and/or variables, as many variables get cited as "missing" from the variable map even when only one should be.
 
-**PBM** resolves these problems and always gives accurate error messages. This is because on top of the variable map that MTK constructs automatically, **PBM** requires the user to implicitly create a map of variables to processes that govern said variables. **PBM** creates the map automatically, the only thing the user has to do is to define the equations in terms of what [`processes_to_mtkmodel`](@ref) wants (which are either [`Process`](@ref)es or `Equation`s as above).
+**PBM** resolves these problems and always gives accurate error messages. This is because on top of the variable map that MTK constructs automatically, **PBM** requires the user to implicitly provide a map of variables to processes that govern said variables. **PBM** creates the map automatically, the only thing the user has to do is to define the equations in terms of what [`processes_to_mtkmodel`](@ref) wants (which are either [`Process`](@ref)es or `Equation`s as above).
 Here is what the user defines to make the same system of equations:
 
 ```@example MAIN
 processes = [
-    ExpRelaxation(z, x^2), # introduces x variable
+    ExpRelaxation(z, x^2),      # introduces x variable
     TimeDerivative(x, 0.1*y),   # introduces y variable
-    y ~ z-x,                    # can be an equation because LHS is single variable
+    y ~ z - x,                  # can be an equation because LHS is single variable
 ]
 ```
 
-Internally, all of these
-
-which is the given to
+which is then given to
 ```@example MAIN
-model = processes_to_mtkmodel(processes)
+model = processes_to_mtkmodel(processes; name = :example)
 equations(model)
 ```
 
-Notice that the resulting **MTK** model is not `structural_simplify`-ed, to allow composing it with other models.
+Notice that the resulting **MTK** model is not `structural_simplify`-ed, to allow composing it with other models. By default `t` is taken as the independent variable.
 
-Now, in contrast to before, if we "forgot" a process, **PBM** will react accordingly. For example, we forgot the 2nd process, then the construction will error informatively, telling us exactly which variable is missing, and because of which processes it is missing:
+Now, in contrast to before, if we "forgot" a process, **PBM** will react accordingly. For example, if we forgot the 2nd process, then the construction will error informatively, telling us exactly which variable is missing, and because of which processes it is missing:
 ```@example MAIN
 try
   model = processes_to_mtkmodel(processes[[1, 3]])
@@ -101,7 +99,7 @@ catch e
 end
 ```
 
-If instead we "forgot" the ``y`` process, **PBM** will not error, but instead warn, and make ``y`` a named parameter:
+If instead we "forgot" the ``y`` process, **PBM** will not error, but instead warn, and make ``y`` equal to a named parameter:
 ```@example MAIN
 model = processes_to_mtkmodel(processes[1:2])
 equations(model)
@@ -112,6 +110,7 @@ parameters(model)
 ```
 
 Lastly, [`processes_to_mtkmodel`](@ref) also allows the concept of "default" processes, that can be used for introduced "process-less" variables.
+Default processes like `processes` given as a 2nd argument to [`process_to_mtkmodel`](@ref).
 For example,
 
 ```@example MAIN
@@ -163,7 +162,10 @@ This API describes how you can implement your own `Process` subtype, if the [exi
 
 ```@docs
 Process
-NoTimeDerivative
+ProcessBasedModelling.lhs_variable
+ProcessBasedModelling.rhs
+ProcessBasedModelling.NoTimeDerivative
+ProcessBasedModelling.lhs
 ```
 
 ## Utility functions

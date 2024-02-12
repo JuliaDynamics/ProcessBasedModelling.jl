@@ -18,8 +18,17 @@ but they don't themselves have an assigned process.
 It is expected that downstream packages that use ProcessBasedModelling.jl to make a
 field-specific library implement a 1-argument version of `processes_to_mtkmodel`,
 or provide a wrapper function for it, and add a default value for `default`.
+
+## Keyword arguments
+
+- `type = ODESystem`: the model type to make
+- `name = nameof(type)`: the name of the model
+- `independent = t`: the independent variable (default: `@variables t`).
+  `t` is also exported by ProcessBasedModelling.jl for convenience.
 """
-function processes_to_mtkmodel(_processes, _default = []; type = ODESystem, name = nameof(type))
+function processes_to_mtkmodel(_processes, _default = [];
+        type = ODESystem, name = nameof(type), independent = t
+    )
     processes = expand_multi_processes(_processes)
     default = default_dict(_default)
     # Setup: obtain lhs-variables so we can track new variables that are not
@@ -72,7 +81,7 @@ function processes_to_mtkmodel(_processes, _default = []; type = ODESystem, name
             end
         end
     end
-    sys = type(eqs, t; name)
+    sys = type(eqs, independent; name)
     return sys
 end
 # version without given processes
