@@ -12,7 +12,7 @@ In ProcessBasedModelling.jl, each variable is governed by a "process".
 Conceptually this is just an equation that _defines_ the given variable.
 To couple the variable with the process it is governed by, a user either defines simple equations of the form "variable = expression", or creates an instance of [`Process`](@ref) if the left-hand-side of the equation needs to be anything more complex. In either case, the variable and the expression are both _symbolic expressions_ created via ModellingToolkit.jl (more specifically, via Symbolics.jl).
 
-Once all the processes about the physical system are collected, they are given as a `Vector` to the [`processes_to_mtkmodel`](@ref) central function. This function also defines what quantifies as a "process" in more specificity.
+Once all the processes about the physical system are collected, they are given as a `Vector` to the [`processes_to_mtkmodel`](@ref) central function, similarly to how one gives a `Vector` of `Equation`s to e.g., `ModelingToolkit.ODESystem`. This function also defines what quantifies as a "process" in more specificity.
 
 ## Example
 
@@ -39,7 +39,6 @@ ProcessBasedModelling.jl (**PBM**) strongly recommends that all defined variable
 
 To make the equations we want, we can use MTK directly, and call
 ```@example MAIN
-
 eqs = [
   Differential(t)(z) ~ x^2 - z
   Differential(x) ~ 0.1y
