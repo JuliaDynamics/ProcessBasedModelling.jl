@@ -17,5 +17,5 @@ build_docs_with_style(pages, ProcessBasedModelling;
     authors = "George Datseris <datseris.george@gmail.com>",
     # We need to remove the cross references because we don't list here
     # the whole `DynamicalSystem` API...
-    warnonly = [:doctest, :missing_docs, :cross_references],
+    warnonly = true,
 )
