@@ -168,6 +168,7 @@ This API describes how you can implement your own `Process` subtype, if the [exi
 Process
 ProcessBasedModelling.lhs_variable
 ProcessBasedModelling.rhs
+ProcessBasedModelling.timescale
 ProcessBasedModelling.NoTimeDerivative
 ProcessBasedModelling.lhs
 ```

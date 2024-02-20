@@ -50,7 +50,7 @@ timescale(::Process) = NoTimeDerivative()
     ProcessBasedModelling.lhs(p::Process)
 
 Return the left-hand-side of the equation that `p` represents as an `Expression`.
-If [`timescale`](@ref) is implemented for `p`, typically `lhs` does not need to be as well.
+If `timescale` is implemented for `p`, typically `lhs` does not need to be as well.
 See [`Process`](@ref) for more.
 """
 function lhs(p::Process)
