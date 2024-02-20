@@ -61,14 +61,17 @@ catch e
 end
 ```
 
-As you can see, the error message is unhelpful even such a trivial system of equations,
+As you can see, the error message is unhelpful even with such a trivial system of equations,
 as all variables are reported as "potentially missing".
 At least on the basis of our scientific reasoning however, both ``x, z`` have an equation.
 It is ``y`` that ``x`` introduced that does not have an equation.
 Moreover, in our experience these errors messages become increasingly less useful when a model has many equations and/or variables, as many variables get cited as "missing" from the variable map even when only one should be.
 
-**PBM** resolves these problems and always gives accurate error messages. This is because on top of the variable map that MTK constructs automatically, **PBM** requires the user to implicitly provide a map of variables to processes that govern said variables. **PBM** creates the map automatically, the only thing the user has to do is to define the equations in terms of what [`processes_to_mtkmodel`](@ref) wants (which are either [`Process`](@ref)es or `Equation`s as above).
-Here is what the user defines to make the same system of equations:
+**PBM** resolves these problems and always gives accurate error messages when it comes to
+the construction of the system of equations.
+This is because on top of the variable map that MTK constructs automatically, **PBM** requires the user to implicitly provide a map of variables to processes that govern said variables. **PBM** creates the map automatically, the only thing the user has to do is to define the equations in terms of what [`processes_to_mtkmodel`](@ref) wants (which are either [`Process`](@ref)es or `Equation`s as above).
+
+Here is what the user defines to make the same system of equations via **PBM**:
 
 ```@example MAIN
 processes = [
@@ -79,6 +82,7 @@ processes = [
 ```
 
 which is then given to
+
 ```@example MAIN
 model = processes_to_mtkmodel(processes; name = :example)
 equations(model)
@@ -86,7 +90,9 @@ equations(model)
 
 Notice that the resulting **MTK** model is not `structural_simplify`-ed, to allow composing it with other models. By default `t` is taken as the independent variable.
 
-Now, in contrast to before, if we "forgot" a process, **PBM** will react accordingly. For example, if we forgot the 2nd process, then the construction will error informatively, telling us exactly which variable is missing, and because of which processes it is missing:
+Now, in contrast to before, if we "forgot" a process, **PBM** will react accordingly.
+For example, if we forgot the 2nd process, then the construction will error informatively,
+telling us exactly which variable is missing, and because of which processes it is missing:
 ```@example MAIN
 try
   model = processes_to_mtkmodel(processes[[1, 3]])
@@ -106,7 +112,7 @@ parameters(model)
 ```
 
 Lastly, [`processes_to_mtkmodel`](@ref) also allows the concept of "default" processes, that can be used for introduced "process-less" variables.
-Default processes like `processes` given as a 2nd argument to [`process_to_mtkmodel`](@ref).
+Default processes are like `processes` and given as a 2nd argument to [`process_to_mtkmodel`](@ref).
 For example,
 
 ```@example MAIN
@@ -116,14 +122,14 @@ equations(model)
 
 does not throw any warnings as it obtained a process for ``y`` from the given default processes.
 
-### Special handling of timescales
+## Special handling of timescales
 
 In dynamical systems modelling the timescale associated with a process is a special parameter. That is why, if a timescale is given for either the [`TimeDerivative`](@ref) or [`ExpRelaxation`](@ref) processes, it is converted to a named `@parameter` by default:
 
 ```@example MAIN
 processes = [
-    ExpRelaxation(z, x^2, 2.0),  # third argument is the timescale
-    TimeDerivative(x, 0.1*y, 0.5),
+    ExpRelaxation(z, x^2, 2.0),    # third argument is the timescale
+    TimeDerivative(x, 0.1*y, 0.5), # third argument is the timescale
     y ~ z-x,
 ]
 
