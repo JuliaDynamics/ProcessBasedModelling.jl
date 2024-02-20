@@ -103,5 +103,3 @@ macro convert_to_parameters(vars...)
     push!(expr.args, Expr(:vect, esc.(vars)...))
     return expr
 end
-
-export @convert_to_parameters
