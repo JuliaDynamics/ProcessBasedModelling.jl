@@ -112,3 +112,17 @@ end
 @testset "extending default processes" begin
     # API not yet finished on this one
 end
+
+@testset "utility functions" begin
+    @variables x(t) = 0.5
+    p = new_derived_named_parameter(x, 0.2, "t")
+    @test ModelingToolkit.getname(p) == :x_t
+    @test default_value(p) == 0.2
+    p = new_derived_named_parameter(x, p, "lala")
+    @test ModelingToolkit.getname(p) == :x_t
+
+    A, B = 0.5, 0.5
+    @convert_to_parameters A B
+    @test A isa Num
+    @test default_value(A) == 0.5
+end
