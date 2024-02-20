@@ -1,6 +1,6 @@
 # ProcessBasedModelling.jl
 
-[![docsdev](https://img.shields.io/badge/docs-dev-lightblue.svg)](https://juliadynamics.github.io/ProcessBasedModelling,jl/dev/)
+[![docsdev](https://img.shields.io/badge/docs-dev-lightblue.svg)](https://juliadynamics.github.io/ProcessBasedModelling.jl/dev/)
 [![docsstable](https://img.shields.io/badge/docs-stable-blue.svg)](https://juliadynamics.github.io/ProcessBasedModelling.jl/stable/)
 [![CI](https://github.com/JuliaDynamics/ProcessBasedModelling.jl/workflows/CI/badge.svg)](https://github.com/JuliaDynamics/ProcessBasedModelling.jl/actions?query=workflow%3ACI)
 [![codecov](https://codecov.io/gh/JuliaDynamics/ProcessBasedModelling.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/JuliaDynamics/ProcessBasedModelling.jl)
