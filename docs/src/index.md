@@ -41,7 +41,7 @@ To make the equations we want, we can use MTK directly, and call
 ```@example MAIN
 eqs = [
   Differential(t)(z) ~ x^2 - z
-  Differential(x) ~ 0.1y
+  Differential(t)(x) ~ 0.1y
   y ~ z - x
 ]
 
@@ -50,25 +50,22 @@ model = ODESystem(eqs, t; name = :example)
 equations(model)
 ```
 
-All good. Now, if we missed the process for one variable (because of our own error/sloppyness/very-large-codebase), MTK will not throw an error at model construction,
+All good. Now, if we missed the process for one variable (because of our own error/sloppyness/very-large-codebase), MTK will throw an error when we try to _structurally simplify_ the model (a step necessary before solving the ODE problem):
 
 ```@example MAIN
 model = ODESystem(eqs[1:2], t; name = :example)
-model = structural_simplify(model)
-equations(model)
-```
-
-only at the construction of the "problem" (here the `ODEProblem`)
-
-```@example MAIN
 try
-  prob = ODEProblem(model)
+  model = structural_simplify(model)
 catch e
   return e.msg
 end
 ```
 
-Interestingly, the error is wrong. ``x`` is defined and has an equation, at least on the basis of our scientific reasoning. However ``y`` that ``x`` introduced does not have an equation. Moreover, in our experience these errors messages become increasingly less useful when a model has many equations and/or variables, as many variables get cited as "missing" from the variable map even when only one should be.
+As you can see, the error message is unhelpful even such a trivial system of equations,
+as all variables are reported as "potentially missing".
+At least on the basis of our scientific reasoning however, both ``x, z`` have an equation.
+It is ``y`` that ``x`` introduced that does not have an equation.
+Moreover, in our experience these errors messages become increasingly less useful when a model has many equations and/or variables, as many variables get cited as "missing" from the variable map even when only one should be.
 
 **PBM** resolves these problems and always gives accurate error messages. This is because on top of the variable map that MTK constructs automatically, **PBM** requires the user to implicitly provide a map of variables to processes that govern said variables. **PBM** creates the map automatically, the only thing the user has to do is to define the equations in terms of what [`processes_to_mtkmodel`](@ref) wants (which are either [`Process`](@ref)es or `Equation`s as above).
 Here is what the user defines to make the same system of equations:
