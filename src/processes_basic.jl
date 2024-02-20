@@ -58,7 +58,8 @@ given `expression`, with timescale `τ`. It creates the equation:
 τn*Differential(t)(variable) ~ expression - variable
 ```
 Where `τn` is a new named `@parameter` with the value of `τ`
-and name `τ_(\$(variable))`. If instead `τ` is `nothing`, then 1 is used in its place.
+and name `τ_(\$(variable))`. If instead `τ` is `nothing`, then 1 is used in its place
+(this is the default behavior).
 If `iszero(τ)`, then the equation `variable ~ expression` is created instead.
 
 The convenience function
@@ -66,7 +67,7 @@ The convenience function
 ExpRelaxation(process, τ)
 ```
 allows converting an existing process (or equation) into an exponential relaxation
-by using the `rhs` as the `expression` in the equation above.
+by using the `rhs(process)` as the `expression` in the equation above.
 """
 struct ExpRelaxation <: Process
     variable
@@ -77,4 +78,7 @@ ExpRelaxation(v, e) = ExpRelaxation(v, e, nothing)
 ExpRelaxation(proc::Union{Process,Equation}, τ) = ExpRelaxation(lhs_variable(proc), rhs(proc), τ)
 
 timescale(e::ExpRelaxation) = e.timescale
-rhs(e::ExpRelaxation) = iszero(e.timescale) ? e.expression : e.expression - e.variable
+function rhs(e::ExpRelaxation)
+    dt = isnothing(e.timescale) || iszero(e.timescale)
+    dt ? e.expression : e.expression - e.variable
+end

@@ -74,6 +74,8 @@ This is because on top of the variable map that MTK constructs automatically, **
 Here is what the user defines to make the same system of equations via **PBM**:
 
 ```@example MAIN
+using ProcessBasedModelling
+
 processes = [
     ExpRelaxation(z, x^2),      # introduces x variable
     TimeDerivative(x, 0.1*y),   # introduces y variable
