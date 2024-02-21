@@ -68,28 +68,38 @@ function new_derived_named_parameter(newstring::String, value::Real)
     return first(dummy)
 end
 
+# Macro thanks to Jonas Isensee,
+# https://discourse.julialang.org/t/metaprogramming-macro-calling-another-macro-making-named-variables/109621/6
 """
-    @named_parameters vars...
+    @convert_to_parameters vars...
 
-Convert all Julia variables `vars` into `@parameters` with name the same as `vars`
-and default value the same as the value of `vars`.
+Convert all variables `vars` into `@parameters` with name the same as `vars`
+and default value the same as the value of `vars`. Example:
+
+```
+julia> A, B = 0.5, 0.5
+(0.5, 0.5)
+
+julia> @convert_to_parameters A B
+2-element Vector{Num}:
+ A
+ B
+
+julia> typeof(A) # `A` is not a number anymore!
+Num
+
+julia> default_value(A)
+0.5
 """
-macro named_parameters(vars...)
-    return quote
-        out = []
-        for v in vars
-            res = (ModelingToolkit.toparam)((Symbolics.wrap)((Symbolics.SymbolicUtils.setmetadata)((Symbolics.setdefaultval)((Sym){Real}($(QuoteNode(v))), $(esc(v))), Symbolics.VariableSource, (:parameters, $(QuoteNode(v))))))
-            push!(out, res)
-        end
-        $(out...)
+macro convert_to_parameters(vars...)
+    expr = Expr(:block)
+    for var in vars
+        binding = esc(var)
+        varname = QuoteNode(var)
+        push!(expr.args,
+            :($binding = (ModelingToolkit.toparam)((Symbolics.wrap)((SymbolicUtils.setmetadata)((Symbolics.setdefaultval)((Sym){Real}($varname), $binding), Symbolics.VariableSource, (:parameters, $varname)))))
+            )
     end
+    push!(expr.args, Expr(:vect, esc.(vars)...))
+    return expr
 end
-
-# This may help:
-
-# julia> @macroexpand @parameters A=0.1 B=0.1
-# quote
-#     A = (ModelingToolkit.toparam)((Symbolics.wrap)((SymbolicUtils.setmetadata)((Symbolics.setdefaultval)((Sym){Real}(:A), 0.1), Symbolics.VariableSource, (:parameters, :A))))
-#     B = (ModelingToolkit.toparam)((Symbolics.wrap)((SymbolicUtils.setmetadata)((Symbolics.setdefaultval)((Sym){Real}(:B), 0.1), Symbolics.VariableSource, (:parameters, :B))))
-#     [A, B]
-# end

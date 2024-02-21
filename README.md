@@ -1,6 +1,6 @@
 # ProcessBasedModelling.jl
 
-[![docsdev](https://img.shields.io/badge/docs-dev-lightblue.svg)](https://juliadynamics.github.io/ProcessBasedModelling,jl/dev/)
+[![docsdev](https://img.shields.io/badge/docs-dev-lightblue.svg)](https://juliadynamics.github.io/ProcessBasedModelling.jl/dev/)
 [![docsstable](https://img.shields.io/badge/docs-stable-blue.svg)](https://juliadynamics.github.io/ProcessBasedModelling.jl/stable/)
 [![CI](https://github.com/JuliaDynamics/ProcessBasedModelling.jl/workflows/CI/badge.svg)](https://github.com/JuliaDynamics/ProcessBasedModelling.jl/actions?query=workflow%3ACI)
 [![codecov](https://codecov.io/gh/JuliaDynamics/ProcessBasedModelling.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/JuliaDynamics/ProcessBasedModelling.jl)
@@ -8,8 +8,9 @@
 
 ProcessBasedModelling.jl is an extension to [ModelingToolkit.jl](https://docs.sciml.ai/ModelingToolkit/stable/) (MTK) for building a model of equations using symbolic expressions.
 It is an alternative framework to MTK's [native component-based modelling](https://docs.sciml.ai/ModelingToolkit/stable/tutorials/acausal_components/), but, instead of components, there are "processes".
-This approach is useful in the modelling of physical/biological/whatever systems, where each variable corresponds to particular physical concept or observable and there are few (or any) duplicate variables to make the definition of MTK "factories" worthwhile, while, there plenty of different physical representations, or _processes_ to represent the given physical concept.
-In many fields this approach parallels modelling reasoning line of the researcher more closely than the "components" approach.
+This approach is useful in the modelling of physical/biological/whatever systems, where each variable corresponds to a particular physical concept or observable and there are few (or none) duplicate variables to make the definition of MTK "factories" worthwhile.
+On the other hand, there plenty of different physical representations, or _processes_ to represent a given physical concept.
+In many scientific fields this approach parallels the modelling reasoning of the researcher more closely than the "components" approach.
 
 Beyond this reasoning style, the biggest strength of ProcessBasedModelling.jl is the **informative errors and automation** it provides regarding incorrect/incomplete equations. When building the MTK model via ProcessBasedModelling.jl the user provides a vector of "processes": equations or custom types that have a well defined and single left-hand-side variable.
 This allows ProcessBasedModelling.jl to:

@@ -5,7 +5,7 @@ A process subtype `p::Process` extends the following unexported functions:
   (left-hand-side variable). There is a default implementation
   `lhs_variable(p) = p.variable` if the field exists.
 - `rhs(p)` which is the right-hand-side expression, i.e., the "actual" process.
-- (optional) `timescale`, which defaults to [`NoTimeDerivative`](@ref).
+- (optional) `timescale(p)`, which defaults to [`NoTimeDerivative`](@ref).
 - (optional) `lhs(p)` which returns the left-hand-side. Let `τ = timescale(p)`.
   Then default `lhs(p)` behaviour depends on `τ` as follows:
   - Just `lhs_variable(p)` if `τ == NoTimeDerivative()`.
@@ -20,7 +20,7 @@ abstract type Process end
 """
     ProcessBasedModelling.NoTimeDerivative()
 
-Singleton value that is the default output of the [`timescale`](@ref) function
+Singleton value that is the default output of the `timescale` function
 for variables that do not vary in time autonomously, i.e., they have no d/dt derivative
 and hence the concept of a "timescale" does not apply to them.
 """
@@ -50,7 +50,7 @@ timescale(::Process) = NoTimeDerivative()
     ProcessBasedModelling.lhs(p::Process)
 
 Return the left-hand-side of the equation that `p` represents as an `Expression`.
-If [`timescale`](@ref) is implemented for `p`, typically `lhs` does not need to be as well.
+If `timescale` is implemented for `p`, typically `lhs` does not need to be as well.
 See [`Process`](@ref) for more.
 """
 function lhs(p::Process)
