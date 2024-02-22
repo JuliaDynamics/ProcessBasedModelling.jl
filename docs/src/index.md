@@ -117,7 +117,7 @@ there is no default process for x(t), and x(t) doesn't have a default value.
 Please provide a process for variable x(t).
 ```
 
-If instead we "forgot" the ``y`` process, **PBM** will not error, but instead warn, and make ``y`` equal to a named parameter:
+If instead we "forgot" the ``y`` process, **PBM** will not error, but warn, and make ``y`` equal to a named parameter, since ``y`` has a default value:
 ```@example MAIN
 model = processes_to_mtkmodel(processes[1:2])
 equations(model)
