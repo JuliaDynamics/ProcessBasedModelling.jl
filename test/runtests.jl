@@ -151,6 +151,7 @@ end
     end
 
     @testset "literal in derived" begin
+        @variables x(t) = 0.5
         p = LiteralParameter(0.5)
         p = new_derived_named_parameter(x, p, "t")
         @test p == 0.5
