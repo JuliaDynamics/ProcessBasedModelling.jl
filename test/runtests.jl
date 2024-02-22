@@ -131,27 +131,38 @@ end
 end
 
 @testset "utility functions" begin
-    @variables x(t) = 0.5
-    p = new_derived_named_parameter(x, 0.2, "t")
-    @test ModelingToolkit.getname(p) == :x_t
-    @test default_value(p) == 0.2
-    p = new_derived_named_parameter(x, p, "lala")
-    @test ModelingToolkit.getname(p) == :x_t
-
-    A, B = 0.5, 0.5
-    C = first(@parameters X = 0.5)
-    @convert_to_parameters A B C
-    @test A isa Num
-    @test default_value(A) == 0.5
-    @test ModelingToolkit.getname(C) == :X
     # Test an untested clause:
     @test default_value(0.5) == 0.5
 
-    p = LiteralParameter(0.5)
-    p = new_derived_named_parameter(x, p, "t")
-    @test p == 0.5
+    @testset "derived" begin
+        @variables x(t) = 0.5
+        p = new_derived_named_parameter(x, 0.2, "t")
+        @test ModelingToolkit.getname(p) == :x_t
+        @test default_value(p) == 0.2
+        p = new_derived_named_parameter(x, p, "lala")
+        @test ModelingToolkit.getname(p) == :x_t
+    end
 
-    p = LiteralParameter(0.5)
-    @convert_to_parameters p
-    @test p == 0.5
+    @testset "convert" begin
+        A, B = 0.5, 0.5
+        C = first(@parameters X = 0.5)
+        @convert_to_parameters A B C
+        @test A isa Num
+        @test default_value(A) == 0.5
+        @test ModelingToolkit.getname(C) == :X
+
+    end
+
+    @testset "literal in derived" begin
+        p = LiteralParameter(0.5)
+        p = new_derived_named_parameter(x, p, "t")
+        @test p == 0.5
+    end
+
+    @testset "literal in covert" begin
+        p = LiteralParameter(0.5)
+        @convert_to_parameters p
+        @test p == 0.5
+    end
+
 end

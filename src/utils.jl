@@ -9,6 +9,9 @@ but rather keep it as a numeric literal in the generated equations.
 struct LiteralParameter{P}
     p::P
 end
+# necessary for the macro
+_literalvalue(x) = x
+_literalvalue(p::LiteralParameter) = p.p
 
 """
     has_variable(eq, var)
@@ -63,7 +66,7 @@ If `value isa Num` return `value`.
 If `value isa `[`LiteralParameter`](@ref), replace it with its literal value.
 Otherwise, create a new MTK `@parameter`
 whose name is created from `variable` by adding the `extra` string.
-If `suffix = true` the extra is added at the end after a `_`. Otherwise
+If `suffix == true` the extra is added at the end after a `_`. Otherwise
 it is added at the start, then a `_` and then the variable name.
 
 For example,
@@ -133,7 +136,7 @@ macro convert_to_parameters(vars...)
         varname = QuoteNode(var)
         push!(expr.args,
             :($binding = ifelse(
-                $binding isa LiteralParameter, $(binding).p, ifelse(
+                $binding isa LiteralParameter, _literalvalue($(binding)), ifelse(
                 # don't do anyting if this is already a Num
                 $binding isa Num, $binding,
                 # Else, convert to modeling toolkit param.
