@@ -52,10 +52,10 @@ using OrdinaryDiffEq
 
     sys = processes_to_mtkmodel(processes)
     @test sys isa ODESystem
-    @test length(states(sys)) == 3
+    @test length(unknowns(sys)) == 3
 
     sys = structural_simplify(sys)
-    @test length(states(sys)) == 1
+    @test length(unknowns(sys)) == 1
 
     u0s = [[300.0], [100.0]]
     ufs = []
@@ -86,7 +86,7 @@ end
 
     @testset "first two, still missing y, but it has default" begin
         model = @test_logs (:warn, r"\W*((?i)Variable(?-i))\W*") processes_to_mtkmodel(procs[1:2])
-        @test length(states(model)) == 3
+        @test length(unknowns(model)) == 3
     end
 
     @testset "first with default the third; missing x" begin
@@ -95,17 +95,17 @@ end
 
     @testset "first with default the second; y gets contant value a different warning" begin
         model = @test_logs (:warn, r"\W*((?i)parameter(?-i))\W*") processes_to_mtkmodel(procs[1:1], procs[2:2])
-        @test length(states(model)) == 3
+        @test length(unknowns(model)) == 3
     end
 
     @testset "all three processes given" begin
         sys = processes_to_mtkmodel(procs[1:1], procs[2:3])
-        @test length(states(sys)) == 3
+        @test length(unknowns(sys)) == 3
         sys = processes_to_mtkmodel(procs[1:2], procs[3:3])
-        @test length(states(sys)) == 3
+        @test length(unknowns(sys)) == 3
         sys = processes_to_mtkmodel(procs[1:3])
-        @test length(states(sys)) == 3
-        @test length(states(structural_simplify(sys))) == 2
+        @test length(unknowns(sys)) == 3
+        @test length(unknowns(structural_simplify(sys))) == 2
     end
 end
 
