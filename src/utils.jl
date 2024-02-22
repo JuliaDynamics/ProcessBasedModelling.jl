@@ -83,7 +83,7 @@ end
 
 Convert all variables `vars` into `@parameters` with name the same as `vars`
 and default value the same as the value of `vars`. The macro leaves unaltered
-inputs that are alread `Num`, assumming they are already parameters.
+inputs that are of type `Num`, assumming they are already parameters.
 This macro is extremely useful to convert e.g., keyword arguments into named parameters,
 while also allowing the user to give custom parameter names.
 
