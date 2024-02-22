@@ -58,7 +58,7 @@ For example,
 @variables x(t)
 p = new_derived_named_parameter(x, 0.5, "τ")
 ```
-Now `p` will be a parameter with symbol `:τ_x` and default value `0.5`.
+Now `p` will be a parameter with name `:τ_x` and default value `0.5`.
 """
 new_derived_named_parameter(v, value::Num, extra, suffix = true) = value
 function new_derived_named_parameter(v, value::Real, extra, suffix = true)
