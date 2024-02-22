@@ -76,7 +76,7 @@ function processes_to_mtkmodel(_processes, _default = [];
                 throw(ArgumentError("""
                 Variable $(added_var) was introduced in process of variable $(introduced[added_var]).
                 However, a process for $(added_var) was not provided,
-                there is no default process for, and it doesn't have a default value.
+                there is no default process for $(added_var), and $(added_var) doesn't have a default value.
                 Please provide a process for variable $(added_var).
                 """))
             end

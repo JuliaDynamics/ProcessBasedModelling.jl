@@ -61,20 +61,23 @@ equations(model)
 
 All good. Now, if we missed the process for one variable (because of our own error/sloppyness/very-large-codebase), MTK will throw an error when we try to _structurally simplify_ the model (a step necessary before solving the ODE problem):
 
-```@example MAIN
+```julia
 model = ODESystem(eqs[1:2], t; name = :example)
-try
-  model = structural_simplify(model)
-catch e
-  return e.msg
-end
+model = structural_simplify(model)
+```
+```
+ERROR: ExtraVariablesSystemException: The system is unbalanced.
+There are 3 highest order derivative variables and 2 equations.
+More variables than equations, here are the potential extra variable(s):
+ z(t)
+ x(t)
+ y(t)
 ```
 
-As you can see, the error message is unhelpful even with such a trivial system of equations,
-as all variables are reported as "potentially missing".
+The error message is unhelpful as all variables are reported as "potentially missing".
 At least on the basis of our scientific reasoning however, both ``x, z`` have an equation.
 It is ``y`` that ``x`` introduced that does not have an equation.
-Moreover, in our experience these errors messages become increasingly less useful when a model has many equations and/or variables, as many variables get cited as "missing" from the variable map even when only one should be.
+Moreover, in our experience these error messages become increasingly less useful when a model has many equations and/or variables, as many variables get cited as "missing" from the variable map even when only one should be.
 
 **PBM** resolves these problems and always gives accurate error messages when it comes to
 the construction of the system of equations.
@@ -104,12 +107,14 @@ Notice that the resulting **MTK** model is not `structural_simplify`-ed, to allo
 Now, in contrast to before, if we "forgot" a process, **PBM** will react accordingly.
 For example, if we forgot the 2nd process, then the construction will error informatively,
 telling us exactly which variable is missing, and because of which processes it is missing:
-```@example MAIN
-try
-  model = processes_to_mtkmodel(processes[[1, 3]])
-catch e
-  return e.msg
-end
+```julia
+model = processes_to_mtkmodel(processes[[1, 3]])
+```
+```
+ERROR: ArgumentError: Variable x(t) was introduced in process of variable z(t).
+However, a process for x(t) was not provided,
+there is no default process for x(t), and x(t) doesn't have a default value.
+Please provide a process for variable x(t).
 ```
 
 If instead we "forgot" the ``y`` process, **PBM** will not error, but instead warn, and make ``y`` equal to a named parameter:
@@ -120,6 +125,16 @@ equations(model)
 
 ```@example MAIN
 parameters(model)
+```
+
+and the warning thrown was:
+```julia
+┌ Warning: Variable y(t) was introduced in process of variable x(t).
+│ However, a process for y(t) was not provided,
+│ and there is no default process for it either.
+│ Since it has a default value, we make it a parameter by adding a process:
+│ `ParameterProcess(y(t))`.
+└ @ ProcessBasedModelling ...\ProcessBasedModelling\src\make.jl:65
 ```
 
 Lastly, [`processes_to_mtkmodel`](@ref) also allows the concept of "default" processes, that can be used for introduced "process-less" variables.
