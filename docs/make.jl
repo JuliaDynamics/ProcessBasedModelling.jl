@@ -15,5 +15,4 @@ pages =  [
 
 build_docs_with_style(pages, ProcessBasedModelling;
     authors = "George Datseris <datseris.george@gmail.com>",
-    warnonly = true,
 )
