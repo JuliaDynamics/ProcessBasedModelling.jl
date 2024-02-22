@@ -1,7 +1,8 @@
 """
     processes_to_mtkmodel(processes::Vector, default::Vector = []; kw...)
 
-Construct a ModelingToolkit.jl model using the provided `processes` and `default` processes.
+Construct a ModelingToolkit.jl model/system using the provided `processes` and `default` processes.
+The model/system is _not_ structurally simplified.
 
 `processes` is a vector whose elements can be:
 

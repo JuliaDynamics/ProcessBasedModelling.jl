@@ -56,6 +56,7 @@ using OrdinaryDiffEq
 
     sys = structural_simplify(sys)
     @test length(unknowns(sys)) == 1
+    @test has_variable(equations(sys), T)
 
     u0s = [[300.0], [100.0]]
     ufs = []
@@ -125,4 +126,6 @@ end
     @convert_to_parameters A B
     @test A isa Num
     @test default_value(A) == 0.5
+
+    @test default_value(0.5) == 0.5
 end
