@@ -51,6 +51,14 @@ If `value isa Num`, return `value`. Otherwise, create a new MTK `@parameter`
 whose name is created from `variable` by adding the `extra` string.
 If `suffix = true` the extra is added at the end after a `_`. Otherwise
 it is added at the start, then a `_` and then the variable name.
+
+For example,
+
+```
+@variables x(t)
+p = new_derived_named_parameter(x, 0.5, "τ")
+```
+Now `p` will be a parameter with symbol `:τ_x` and default value `0.5`.
 """
 new_derived_named_parameter(v, value::Num, extra, suffix = true) = value
 function new_derived_named_parameter(v, value::Real, extra, suffix = true)
