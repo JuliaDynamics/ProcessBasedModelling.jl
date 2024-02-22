@@ -57,12 +57,12 @@ function lhs(p::Process)
     τ = timescale(p)
     v = lhs_variable(p)
     if isnothing(τ) # time variability exists but timescale is nonexistent (unity)
-        return Differential(t)(v)
+        return D(v)
     elseif τ isa NoTimeDerivative || iszero(τ) # no time variability
         return v
     else # τ is either Num or Real
         τvar = new_derived_named_parameter(v, τ, "τ", false)
-        return τvar*Differential(t)(v)
+        return τvar*D(v)
     end
 end
 

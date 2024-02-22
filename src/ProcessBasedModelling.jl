@@ -8,9 +8,9 @@ module ProcessBasedModelling
 end ProcessBasedModelling
 
 using Reexport
+using ModelingToolkit: t_nounits as t, D_nounits as D
 @reexport using ModelingToolkit
-
-@variables t # independent variable (time)
+export t
 
 include("API.jl")
 include("utils.jl")
