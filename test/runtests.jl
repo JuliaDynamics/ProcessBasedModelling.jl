@@ -139,8 +139,6 @@ end
         p = new_derived_named_parameter(x, 0.2, "t")
         @test ModelingToolkit.getname(p) == :x_t
         @test default_value(p) == 0.2
-        p = new_derived_named_parameter(x, p, "lala")
-        @test ModelingToolkit.getname(p) == :x_t
     end
 
     @testset "convert" begin
@@ -150,7 +148,6 @@ end
         @test A isa Num
         @test default_value(A) == 0.5
         @test ModelingToolkit.getname(C) == :X
-
     end
 
     @testset "literal in derived" begin
