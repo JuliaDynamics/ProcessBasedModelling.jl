@@ -68,6 +68,22 @@ using OrdinaryDiffEq
 
     @test ufs[1] ≈ [319] atol = 1
     @test ufs[2] ≈ [245] atol = 1
+
+    # vector of processes
+    processes = [
+        [TanhProcess(α, T, 0.7, 0.289, 10.0, 274.5),
+        TanhProcess(ε, T, 0.5, 0.41, 2.0, 288.0),],
+        HeatBalance()
+    ]
+
+    sys = processes_to_mtkmodel(processes)
+    @test sys isa ODESystem
+    @test length(unknowns(sys)) == 3
+
+    sys = structural_simplify(sys)
+    @test length(unknowns(sys)) == 1
+    @test has_variable(equations(sys), T)
+
 end
 
 @testset "add missing processes" begin

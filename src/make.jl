@@ -85,10 +85,6 @@ function processes_to_mtkmodel(_processes, _default = [];
     sys = type(eqs, independent; name)
     return sys
 end
-# version without given processes
-function processes_to_mtkmodel(; kwargs...)
-    return processes_to_mtkmodel(collect(values(default_processes())); kwargs...)
-end
 
 function expand_multi_processes(procs::Vector)
     # Expand vectors of processes or ODESystems
