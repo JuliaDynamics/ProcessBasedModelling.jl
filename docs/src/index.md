@@ -138,7 +138,7 @@ and the warning thrown was:
 ```
 
 Lastly, [`processes_to_mtkmodel`](@ref) also allows the concept of "default" processes, that can be used for introduced "process-less" variables.
-Default processes are like `processes` and given as a 2nd argument to [`process_to_mtkmodel`](@ref).
+Default processes are like `processes` and given as a 2nd argument to [`processes_to_mtkmodel`](@ref).
 For example,
 
 ```@example MAIN
@@ -167,7 +167,8 @@ equations(model)
 parameters(model)
 ```
 
-This special handling is also why each process explicitly declares a timescale via the [`timescale`](@ref) function that one can optionally extend.
+This special handling is also why each process can declare a timescale via the [`ProcessBasedModelling.timescale`](@ref) function that one can optionally extend
+(although in our experience the default behaviour covers almost all cases).
 
 
 ## Main API function
@@ -186,7 +187,7 @@ ExpRelaxation
 
 ## `Process` API
 
-This API describes how you can implement your own `Process` subtype, if the [existing predefined subtypes](@ref predefined_processes) don't fit your bill!
+This API describes how you can implement your own `Process` subtype, if the [existing predefined subtypes](@ref predefineProcessBasedModelling.timescaled_processes) don't fit your bill!
 
 ```@docs
 Process
