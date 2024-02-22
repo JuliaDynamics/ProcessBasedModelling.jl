@@ -79,6 +79,13 @@ ExpRelaxation(proc::Union{Process,Equation}, τ) = ExpRelaxation(lhs_variable(pr
 
 timescale(e::ExpRelaxation) = e.timescale
 function rhs(e::ExpRelaxation)
-    dt = isnothing(e.timescale) || iszero(e.timescale)
-    dt ? e.expression : e.expression - e.variable
+    τ = timescale(e)
+    hasdt = if τ isa NoTimeDerivative
+        false
+    elseif isnothing(τ)
+        true
+    else
+        !iszero(τ)
+    end
+    hasdt ? e.expression - e.variable : e.expression
 end
