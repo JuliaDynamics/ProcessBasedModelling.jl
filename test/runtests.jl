@@ -139,9 +139,11 @@ end
     @test ModelingToolkit.getname(p) == :x_t
 
     A, B = 0.5, 0.5
-    @convert_to_parameters A B
+    C = first(@parameters X = 0.5)
+    @convert_to_parameters A B C
     @test A isa Num
     @test default_value(A) == 0.5
-
+    @test ModelingToolkit.getname(C) == :X
+    # Test an untested clause:
     @test default_value(0.5) == 0.5
 end

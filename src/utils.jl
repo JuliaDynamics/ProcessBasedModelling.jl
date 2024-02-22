@@ -82,22 +82,33 @@ end
     @convert_to_parameters vars...
 
 Convert all variables `vars` into `@parameters` with name the same as `vars`
-and default value the same as the value of `vars`. Example:
+and default value the same as the value of `vars`. The macro leaves unaltered
+inputs that are alread `Num`, assumming they are already parameters.
+This macro is extremely useful to convert e.g., keyword arguments into named parameters,
+while also allowing the user to give custom parameter names.
+
+Example:
 
 ```
 julia> A, B = 0.5, 0.5
 (0.5, 0.5)
 
-julia> @convert_to_parameters A B
-2-element Vector{Num}:
+julia> C = first(@parameters X = 0.5)
+
+julia> @convert_to_parameters A B C
+3-element Vector{Num}:
  A
  B
+ X
 
 julia> typeof(A) # `A` is not a number anymore!
 Num
 
 julia> default_value(A)
 0.5
+
+julia> C # the binding `C` still corresponds to parameter named `:X`!
+ X
 """
 macro convert_to_parameters(vars...)
     expr = Expr(:block)
@@ -105,8 +116,15 @@ macro convert_to_parameters(vars...)
         binding = esc(var)
         varname = QuoteNode(var)
         push!(expr.args,
-            :($binding = (ModelingToolkit.toparam)((Symbolics.wrap)((SymbolicUtils.setmetadata)((Symbolics.setdefaultval)((Sym){Real}($varname), $binding), Symbolics.VariableSource, (:parameters, $varname)))))
+            :($binding = ifelse(
+                # don't do anyting if this is already a Num
+                $binding isa Num, $binding,
+                # Else, convert to modeling toolkit param.
+                # This syntax was obtained by doing @macroexpand @parameters A = 0.5
+                (ModelingToolkit.toparam)((Symbolics.wrap)((SymbolicUtils.setmetadata)((Symbolics.setdefaultval)((Sym){Real}($varname), $binding), Symbolics.VariableSource, (:parameters, $varname))))
+                )
             )
+        )
     end
     push!(expr.args, Expr(:vect, esc.(vars)...))
     return expr
