@@ -26,7 +26,7 @@ export Process, ParameterProcess, TimeDerivative, ExpRelaxation
 export processes_to_mtkmodel
 export new_derived_named_parameter
 export has_variable, default_value
-export @convert_to_parameters
+export @convert_to_parameters, LiteralParameter
 export lhs_variable, rhs, lhs
 
 end

@@ -146,4 +146,12 @@ end
     @test ModelingToolkit.getname(C) == :X
     # Test an untested clause:
     @test default_value(0.5) == 0.5
+
+    p = LiteralParameter(0.5)
+    p = new_derived_named_parameter(x, p, "t")
+    @test p == 0.5
+
+    p = LiteralParameter(0.5)
+    @convert_to_parameters p
+    @test p == 0.5
 end

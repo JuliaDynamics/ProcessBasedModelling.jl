@@ -1,4 +1,16 @@
 """
+    LiteralParameter(p)
+
+A wrapper around a value `p` to indicate to
+[`new_derived_named_parameter`](@ref) or [`@convert_to_parameters`](@ref)
+to _not_ convert the given parameter `p` into a named `@parameters` instance,
+but rather keep it as a numeric literal in the generated equations.
+"""
+struct LiteralParameter{P}
+    p::P
+end
+
+"""
     has_variable(eq, var)
 
 Return `true` if variable `var` exists in the equation(s) `eq`, `false` otherwise.
@@ -47,7 +59,9 @@ end
 """
     new_derived_named_parameter(variable, value, extra::String, suffix = true)
 
-If `value isa Num`, return `value`. Otherwise, create a new MTK `@parameter`
+If `value isa Num` return `value`.
+If `value isa `[`LiteralParameter`](@ref), replace it with its literal value.
+Otherwise, create a new MTK `@parameter`
 whose name is created from `variable` by adding the `extra` string.
 If `suffix = true` the extra is added at the end after a `_`. Otherwise
 it is added at the start, then a `_` and then the variable name.
@@ -60,7 +74,8 @@ p = new_derived_named_parameter(x, 0.5, "τ")
 ```
 Now `p` will be a parameter with name `:τ_x` and default value `0.5`.
 """
-new_derived_named_parameter(v, value::Num, extra, suffix = true) = value
+new_derived_named_parameter(v, value::Num, args...) = value
+new_derived_named_parameter(v, value::LiteralParameter, args...) = value.p
 function new_derived_named_parameter(v, value::Real, extra, suffix = true)
     n = string(ModelingToolkit.getname(v))
     newstring = if suffix
@@ -84,6 +99,7 @@ end
 Convert all variables `vars` into `@parameters` with name the same as `vars`
 and default value the same as the value of `vars`. The macro leaves unaltered
 inputs that are of type `Num`, assumming they are already parameters.
+It also replaces [`LiteralParameter`](@ref) inputs with its literal values.
 This macro is extremely useful to convert e.g., keyword arguments into named parameters,
 while also allowing the user to give custom parameter names.
 
@@ -117,12 +133,13 @@ macro convert_to_parameters(vars...)
         varname = QuoteNode(var)
         push!(expr.args,
             :($binding = ifelse(
+                $binding isa LiteralParameter, $(binding).p, ifelse(
                 # don't do anyting if this is already a Num
                 $binding isa Num, $binding,
                 # Else, convert to modeling toolkit param.
                 # This syntax was obtained by doing @macroexpand @parameters A = 0.5
                 (ModelingToolkit.toparam)((Symbolics.wrap)((SymbolicUtils.setmetadata)((Symbolics.setdefaultval)((Sym){Real}($varname), $binding), Symbolics.VariableSource, (:parameters, $varname))))
-                )
+                ))
             )
         )
     end
