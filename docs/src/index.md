@@ -5,12 +5,17 @@ ProcessBasedModelling
 !!! note "Basic familiarity with ModelingToolkit.jl"
     These docs assume that you have some basic familiarity with ModelingToolkit.jl. If you don't going through the introductory tutorial of [ModelingToolkit.jl](https://docs.sciml.ai/ModelingToolkit/stable/) should be enough to get you started!
 
+!!! note "Default `t` is unitless"
+    Like ModelingToolkit.jl, ProcessBasedModelling.jl also exports `t` as the independent variable representing time.
+    However, instead of the default `t` of ModelingToolkit.jl, here `t` is unitless.
+    Do `t = ModelingToolkit.t` to obtain the unitful version of `t`.
 
 ## Usage
 
 In ProcessBasedModelling.jl, each variable is governed by a "process".
 Conceptually this is just an equation that _defines_ the given variable.
-To couple the variable with the process it is governed by, a user either defines simple equations of the form "variable = expression", or creates an instance of [`Process`](@ref) if the left-hand-side of the equation needs to be anything more complex. In either case, the variable and the expression are both _symbolic expressions_ created via ModellingToolkit.jl (more specifically, via Symbolics.jl).
+To couple the variable with the process it is governed by, a user either defines simple equations of the form "variable = expression", or creates an instance of [`Process`](@ref) if the left-hand-side of the equation needs to be anything more complex (or, simply if you want to utilize the conveniences of predefined processes).
+In either case, the variable and the expression are both _symbolic expressions_ created via ModellingToolkit.jl (more specifically, via Symbolics.jl).
 
 Once all the processes about the physical system are collected, they are given as a `Vector` to the [`processes_to_mtkmodel`](@ref) central function, similarly to how one gives a `Vector` of `Equation`s to e.g., `ModelingToolkit.ODESystem`. This function also defines what quantifies as a "process" in more specificity.
 
@@ -30,12 +35,16 @@ symbolically using ModelingToolkit.jl (**MTK**). We define
 using ModelingToolkit
 using OrdinaryDiffEq: Tsit5
 
-@variables t # independent variable
+@variables t # independent variable _without_ units
 @variables z(t) = 0.0
 @variables x(t) # no default value
 @variables y(t) = 0.0
 ```
 ProcessBasedModelling.jl (**PBM**) strongly recommends that all defined variables have a default value at definition point. Here we didn't do this for ``x`` to illustrate what how such an "omission" will be treated by **PBM**.
+
+!!! note "ModelingToolkit.jl is re-exported"
+    ProcessBasedModelling.jl re-exports the whole `ModelingToolkit` package,
+    so you don't need to be `using` both of them, just `using ProcessBasedModelling`.
 
 To make the equations we want, we can use MTK directly, and call
 ```@example MAIN
