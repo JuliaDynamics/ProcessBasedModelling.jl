@@ -1,7 +1,8 @@
 """
     processes_to_mtkmodel(processes::Vector, default::Vector = []; kw...)
 
-Construct a ModelingToolkit.jl model using the provided `processes` and `default` processes.
+Construct a ModelingToolkit.jl model/system using the provided `processes` and `default` processes.
+The model/system is _not_ structurally simplified.
 
 `processes` is a vector whose elements can be:
 
@@ -60,33 +61,30 @@ function processes_to_mtkmodel(_processes, _default = [];
             append_incomplete_variables!(incomplete, introduced, lhs_vars, def_proc)
         else
             def_val = default_value(added_var) # utilize default value (if possible)
+            varstr = ModelingToolkit.getname(added_var)
             if !isnothing(def_val)
                 @warn("""
-                Variable $(added_var) was introduced in process of variable $(introduced[added_var]).
-                However, a process for $(added_var) was not provided,
+                Variable $(varstr) was introduced in process of variable $(introduced[added_var]).
+                However, a process for $(varstr) was not provided,
                 and there is no default process for it either.
                 Since it has a default value, we make it a parameter by adding a process:
-                `ParameterProcess($(added_var))`.
+                `ParameterProcess($(varstr))`.
                 """)
                 parproc = ParameterProcess(added_var)
                 push!(eqs, lhs(parproc) ~ rhs(parproc))
                 push!(lhs_vars, added_var)
             else
                 throw(ArgumentError("""
-                Variable $(added_var) was introduced in process of variable $(introduced[added_var]).
-                However, a process for $(added_var) was not provided,
-                there is no default process for, and it doesn't have a default value.
-                Please provide a process for variable $(added_var).
+                Variable $(varstr) was introduced in process of variable $(introduced[added_var]).
+                However, a process for $(varstr) was not provided,
+                there is no default process for $(varstr), and $(varstr) doesn't have a default value.
+                Please provide a process for variable $(varstr).
                 """))
             end
         end
     end
     sys = type(eqs, independent; name)
     return sys
-end
-# version without given processes
-function processes_to_mtkmodel(; kwargs...)
-    return processes_to_mtkmodel(collect(values(default_processes())); kwargs...)
 end
 
 function expand_multi_processes(procs::Vector)
