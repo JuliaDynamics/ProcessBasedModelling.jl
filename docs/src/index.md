@@ -187,7 +187,7 @@ ExpRelaxation
 
 ## `Process` API
 
-This API describes how you can implement your own `Process` subtype, if the [existing predefined subtypes](@ref predefineProcessBasedModelling.timescaled_processes) don't fit your bill!
+This API describes how you can implement your own `Process` subtype, if the [existing predefined subtypes](@ref predefined_processes) don't fit your bill!
 
 ```@docs
 Process

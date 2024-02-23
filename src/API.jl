@@ -1,5 +1,8 @@
 """
-A process subtype `p::Process` extends the following unexported functions:
+    Process
+
+A new process must subtype `Process` and can be used in [`processes_to_mtkmodel`](@ref).
+The type must extend the following functions from the module `ProcessBasedModelling`:
 
 - `lhs_variable(p)` which returns the variable the process describes
   (left-hand-side variable). There is a default implementation
@@ -57,7 +60,7 @@ function lhs(p::Process)
     τ = timescale(p)
     v = lhs_variable(p)
     if isnothing(τ) # time variability exists but timescale is nonexistent (unity)
-        return D(v)
+        return D(v) # `D` is the MTK canonical variable for time derivative
     elseif τ isa NoTimeDerivative || iszero(τ) # no time variability
         return v
     else # τ is either Num or Real
