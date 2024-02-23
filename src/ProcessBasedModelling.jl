@@ -22,7 +22,7 @@ include("processes_basic.jl")
 
 # TODO: Perhaps not don't export `t`?
 export t
-export Process, ParameterProcess, TimeDerivative, ExpRelaxation
+export Process, ParameterProcess, TimeDerivative, ExpRelaxation, AdditionProcess
 export processes_to_mtkmodel
 export new_derived_named_parameter
 export has_variable, default_value

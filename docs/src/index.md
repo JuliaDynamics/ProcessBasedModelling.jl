@@ -183,6 +183,7 @@ processes_to_mtkmodel
 ParameterProcess
 TimeDerivative
 ExpRelaxation
+AdditionProcess
 ```
 
 ## `Process` API

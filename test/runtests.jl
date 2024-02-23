@@ -43,7 +43,6 @@ using OrdinaryDiffEq
         return left + (right - left)*(1 + tanh(2(T - reference)/(scale)))*0.5
     end
 
-
     processes = [
         TanhProcess(α, T, 0.7, 0.289, 10.0, 274.5),
         TanhProcess(ε, T, 0.5, 0.41, 2.0, 288.0),
@@ -126,10 +125,6 @@ end
     end
 end
 
-@testset "extending default processes" begin
-    # API not yet finished on this one
-end
-
 @testset "utility functions" begin
     # Test an untested clause:
     @test default_value(0.5) == 0.5
@@ -163,4 +158,26 @@ end
         @test p == 0.5
     end
 
+end
+
+@testset "default processes" begin
+    @variables x(t) = 0.5
+    @variables y(t) = 0.5
+    @variables z(t) = 0.5
+    @variables w(t) = 0.5
+    @variables q(t) = 0.5
+    processes = [
+        TimeDerivative(x, x^2, 1.2),
+        ParameterProcess(y),
+        ExpRelaxation(z, x^2),
+        AdditionProcess(ParameterProcess(w), x^2),
+        AdditionProcess(TimeDerivative(q, x^2, 1.2), ExpRelaxation(q, x^2))
+    ]
+    mtk = processes_to_mtkmodel(processes)
+    eqs = equations(mtk)
+    @test has_variable(eqs, x)
+    @test has_variable(eqs, y)
+    @test has_variable(eqs, z)
+    @test has_variable(eqs, w)
+    @test has_variable(eqs, q)
 end

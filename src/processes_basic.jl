@@ -89,3 +89,36 @@ function rhs(e::ExpRelaxation)
     end
     hasdt ? e.expression - e.variable : e.expression
 end
+
+"""
+    AdditionProcess(process, added)
+
+A convenience process for adding `added` to the `rhs` of the given `process`.
+`added` can be a `Process` or `Equation`, in which case it is checked that
+the `lhs_variable` matches. Otherwise, it can be an arbitrary expression.
+"""
+struct AdditionProcess <: Process
+    process
+    added
+    function AdditionProcess(process, added)
+        if typeof(added) <: Union{Process, Equation}
+            if ModelingToolkit.getname(lhs_variable(process)) ≠ ModelingToolkit.getname(lhs_variable(added))
+                @show lhs_variable(process), lhs_variable(added)
+                throw(ArgumentError("Added component does not have the same lhs variable."))
+            end
+        end
+        return new(process, added)
+    end
+end
+
+lhs_variable(a::AdditionProcess) = lhs_variable(a.process)
+timescale(a::AdditionProcess) = timescale(a.process)
+
+function rhs(a::AdditionProcess)
+    if typeof(a.added) <: Union{Process, Equation}
+        plus = rhs(a.added)
+    else
+        plus = a.added
+    end
+    return rhs(a.process) + plus
+end
