@@ -60,14 +60,16 @@ function is_variable(x)
 end
 
 """
-    new_derived_named_parameter(variable, value, extra::String, prefix = true)
+    new_derived_named_parameter(variable, value, extra::String; kw...)
 
 If `value isa Num` return `value`.
 If `value isa LiteralParameter`, replace it with its literal value.
 Otherwise, create a new MTK `@parameter`
 whose name is created from `variable` (which could also be just a `Symbol`) by adding the `extra` string.
-If `prefix == false` the `extra` is added at the end after a `_`. Otherwise
+If the keyword `prefix == false` the `extra` is added at the end after a `_`. Otherwise
 it is added at the start, then a `_` and then the variable name.
+The keyword `connector = "_"` is what connects the `extra` with the name.
+
 
 For example,
 
@@ -77,14 +79,14 @@ p = new_derived_named_parameter(x, 0.5, "τ")
 ```
 Now `p` will be a parameter with name `:τ_x` and default value `0.5`.
 """
-new_derived_named_parameter(v, value::Num, args...) = value
-new_derived_named_parameter(v, value::LiteralParameter, args...) = value.p
-function new_derived_named_parameter(v, value::Real, extra, prefix = true)
+new_derived_named_parameter(v, value::Num, extra::String; kw...) = value
+new_derived_named_parameter(v, value::LiteralParameter, extra::String; kw...) = value.p
+function new_derived_named_parameter(v, value::Real, extra; connector = "_", prefix = true)
     n = string(ModelingToolkit.getname(v))
     newstring = if !(prefix)
-        n*"_"*extra
+        n*connector*extra
     else
-        extra*"_"*n
+        extra*connector*n
     end
     new_derived_named_parameter(newstring, value)
 end

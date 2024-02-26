@@ -134,8 +134,8 @@ end
         p = new_derived_named_parameter(x, 0.2, "t")
         @test ModelingToolkit.getname(p) == :t_x
         @test default_value(p) == 0.2
-        p = new_derived_named_parameter(x, 0.2, "t", false)
-        @test ModelingToolkit.getname(p) == :x_t
+        p = new_derived_named_parameter(x, 0.2, "t"; prefix = false, connector = "")
+        @test ModelingToolkit.getname(p) == :xt
     end
 
     @testset "convert" begin
