@@ -132,8 +132,10 @@ end
     @testset "derived" begin
         @variables x(t) = 0.5
         p = new_derived_named_parameter(x, 0.2, "t")
-        @test ModelingToolkit.getname(p) == :x_t
+        @test ModelingToolkit.getname(p) == :t_x
         @test default_value(p) == 0.2
+        p = new_derived_named_parameter(x, 0.2, "t", false)
+        @test ModelingToolkit.getname(p) == :x_t
     end
 
     @testset "convert" begin
@@ -157,6 +159,9 @@ end
         @convert_to_parameters p
         @test p == 0.5
     end
+
+
+    @testset "new named var"
 
 end
 

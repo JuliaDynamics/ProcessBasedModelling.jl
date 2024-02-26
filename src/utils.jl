@@ -60,13 +60,13 @@ function is_variable(x)
 end
 
 """
-    new_derived_named_parameter(variable, value, extra::String, suffix = true)
+    new_derived_named_parameter(variable, value, extra::String, prefix = true)
 
 If `value isa Num` return `value`.
-If `value isa `[`LiteralParameter`](@ref), replace it with its literal value.
+If `value isa LiteralParameter`, replace it with its literal value.
 Otherwise, create a new MTK `@parameter`
-whose name is created from `variable` by adding the `extra` string.
-If `suffix == true` the extra is added at the end after a `_`. Otherwise
+whose name is created from `variable` (which could also be just a `Symbol`) by adding the `extra` string.
+If `prefix == false` the `extra` is added at the end after a `_`. Otherwise
 it is added at the start, then a `_` and then the variable name.
 
 For example,
@@ -79,9 +79,9 @@ Now `p` will be a parameter with name `:τ_x` and default value `0.5`.
 """
 new_derived_named_parameter(v, value::Num, args...) = value
 new_derived_named_parameter(v, value::LiteralParameter, args...) = value.p
-function new_derived_named_parameter(v, value::Real, extra, suffix = true)
+function new_derived_named_parameter(v, value::Real, extra, prefix = true)
     n = string(ModelingToolkit.getname(v))
-    newstring = if suffix
+    newstring = if !(prefix)
         n*"_"*extra
     else
         extra*"_"*n
