@@ -14,32 +14,35 @@ _literalvalue(x) = x
 _literalvalue(p::LiteralParameter) = p.p
 
 """
-    has_variable(eqs, var)
+    has_symbolic_var(eqs, var)
 
-Return `true` if variable `var` exists in the equation(s) `eq`, `false` otherwise.
+Return `true` if symbolic variable `var` exists in the equation(s) `eq`, `false` otherwise.
+This works for either `@parameters` or `@variables`.
+If `var` is a `Symbol` isntead of a `Num`, all variables are converted to their names
+and equality is checked on the basis of the name only.
 """
-function has_variable(eq::Equation, var)
+function has_symbolic_var(eq::Equation, var)
     vars = get_variables(eq)
+    return _has_thing(var, vars)
+end
+has_symbolic_var(eqs, var) = any(eq -> has_symbolic_var(eq, var), eqs)
+
+function _has_thing(var::Num, vars)
     return any(isequal(var), vars)
 end
-has_variable(eqs, var) = any(eq -> has_variable(eq, var), eqs)
-
-"""
-    has_parameter(eqs, par)
-
-Return `true` if parameter `par` exists in the equation(s) `eqs`, `false` otherwise.
-"""
-function has_parameter(eq::Equation, var)
-    vars = get_parameters(eq)
+function _has_thing(var::Symbol, vars)
+    vars = ModelingToolkit.getname.(vars)
+    var = ModelingToolkit.getname(var)
     return any(isequal(var), vars)
 end
-has_variable(eqs, var) = any(eq -> has_variable(eq, var), eqs)
 
 """
     default_value(x)
 
 Return the default value of a symbolic variable `x` or `nothing`
 if it doesn't have any. Return `x` if `x` is not a symbolic variable.
+The difference with `ModelingToolkit.getdefault` is that this function will
+not error on the absence of a default value.
 """
 default_value(x) = x
 default_value(x::Num) = default_value(x.val)
@@ -74,11 +77,14 @@ end
 
 If `value isa Num` return `value`.
 If `value isa LiteralParameter`, replace it with its literal value.
-Otherwise, create a new MTK `@parameter`
-whose name is created from `variable` (which could also be just a `Symbol`) by adding the `extra` string.
-If the keyword `prefix == false` the `extra` is added at the end after a `_`. Otherwise
-it is added at the start, then a `_` and then the variable name.
-The keyword `connector = "_"` is what connects the `extra` with the name.
+Otherwise, create a new MTK `@parameter` whose name is created from `variable`
+(which could also be just a `Symbol`) by adding the `extra` string.
+
+**Keywords**:
+
+- `prefix = true`: whether the `extra` is added at the start or the end, connecting
+  with the with the `connector`.
+- `connector = "_"`: what to use to connect `extra` with the name.
 
 
 For example,

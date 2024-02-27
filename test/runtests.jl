@@ -55,7 +55,7 @@ using OrdinaryDiffEq
 
     sys = structural_simplify(sys)
     @test length(unknowns(sys)) == 1
-    @test has_variable(equations(sys), T)
+    @test has_symbolic_var(equations(sys), T)
 
     u0s = [[300.0], [100.0]]
     ufs = []
@@ -81,7 +81,7 @@ using OrdinaryDiffEq
 
     sys = structural_simplify(sys)
     @test length(unknowns(sys)) == 1
-    @test has_variable(equations(sys), T)
+    @test has_symbolic_var(equations(sys), T)
 
 end
 
@@ -160,12 +160,9 @@ end
         @test p == 0.5
     end
 
-
-    @testset "new named var"
-
 end
 
-@testset "default processes" begin
+@testset "default processes, has_thing" begin
     @variables x(t) = 0.5
     @variables y(t) = 0.5
     @variables z(t) = 0.5
@@ -174,15 +171,18 @@ end
     processes = [
         TimeDerivative(x, x^2, 1.2),
         ParameterProcess(y),
-        ExpRelaxation(z, x^2),
+        ExpRelaxation(z, x^2, 0.5),
         AdditionProcess(ParameterProcess(w), x^2),
         AdditionProcess(TimeDerivative(q, x^2, 1.2), ExpRelaxation(q, x^2))
     ]
     mtk = processes_to_mtkmodel(processes)
     eqs = equations(mtk)
-    @test has_variable(eqs, x)
-    @test has_variable(eqs, y)
-    @test has_variable(eqs, z)
-    @test has_variable(eqs, w)
-    @test has_variable(eqs, q)
+    @test has_symbolic_var(eqs, x)
+    @test has_symbolic_var(eqs, y)
+    @test has_symbolic_var(eqs, :z)
+    @test has_symbolic_var(eqs, w)
+    @test has_symbolic_var(eqs, q)
+    @test has_symbolic_var(eqs, :τ_z)
+    @test has_symbolic_var(eqs, :w_0)
+
 end

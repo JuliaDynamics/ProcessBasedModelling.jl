@@ -17,7 +17,7 @@ struct ParameterProcess <: Process
     variable
     value
     function ParameterProcess(variable, value)
-        var = new_derived_named_parameter(variable, value, "0")
+        var = new_derived_named_parameter(variable, value, "0"; prefix = false)
         return new(variable, var)
     end
 end
