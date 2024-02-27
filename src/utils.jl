@@ -99,10 +99,10 @@ new_derived_named_parameter(v, value::Num, extra::String; kw...) = value
 new_derived_named_parameter(v, value::LiteralParameter, extra::String; kw...) = value.p
 function new_derived_named_parameter(v, value::Real, extra; connector = "_", prefix = true)
     n = string(ModelingToolkit.getname(v))
-    newstring = if !(prefix)
-        n*connector*extra
-    else
+    newstring = if prefix
         extra*connector*n
+    else
+        n*connector*extra
     end
     new_derived_named_parameter(newstring, value)
 end
