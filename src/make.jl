@@ -33,8 +33,8 @@ function processes_to_mtkmodel(_processes, _default = [];
     processes = expand_multi_processes(_processes)
     default = default_dict(_default)
     # Setup: obtain lhs-variables so we can track new variables that are not
-    # in this vector
-    lhs_vars = map(lhs_variable, processes)
+    # in this vector. The vector has to be of type `Num`
+    lhs_vars = Num[lhs_variable(p) for p in processes]
     ensure_unique_vars(lhs_vars)
     # First pass: generate equations from given processes
     # and collect variables without equations
