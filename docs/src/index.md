@@ -199,12 +199,17 @@ ProcessBasedModelling.NoTimeDerivative
 ProcessBasedModelling.lhs
 ```
 
+## Automatic named parameters
+
+```@docs
+new_derived_named_parameter
+@convert_to_parameters
+LiteralParameter
+```
+
 ## Utility functions
 
 ```@docs
 default_value
-has_variable
-new_derived_named_parameter
-@convert_to_parameters
-LiteralParameter
+has_symbolic_var
 ```
