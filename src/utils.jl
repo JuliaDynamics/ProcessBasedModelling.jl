@@ -20,12 +20,18 @@ Return `true` if symbolic variable `var` exists in the equation(s) `eq`, `false`
 This works for either `@parameters` or `@variables`.
 If `var` is a `Symbol` isntead of a `Num`, all variables are converted to their names
 and equality is checked on the basis of the name only.
+
+    has_symbolic_var(model, var)
+
+When given a MTK model (such as `ODESystem`) search in _all_ the equations of the system,
+including observed variables.
 """
 function has_symbolic_var(eq::Equation, var)
     vars = get_variables(eq)
     return _has_thing(var, vars)
 end
-has_symbolic_var(eqs, var) = any(eq -> has_symbolic_var(eq, var), eqs)
+has_symbolic_var(eqs::Vector{Equation}, var) = any(eq -> has_symbolic_var(eq, var), eqs)
+has_symbolic_var(mtk, var) = has_symbolic_var(all_equations(mtk), var)
 
 function _has_thing(var::Num, vars)
     return any(isequal(var), vars)

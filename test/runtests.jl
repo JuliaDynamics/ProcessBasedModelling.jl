@@ -183,6 +183,7 @@ end
     @test has_symbolic_var(eqs, :z)
     @test has_symbolic_var(eqs, mtk.w)
     @test has_symbolic_var(eqs, q)
+    @test has_symbolic_var(mtk, q)
     @test has_symbolic_var(eqs, mtk.τ_z)
     @test has_symbolic_var(eqs, :w_0)
 end
