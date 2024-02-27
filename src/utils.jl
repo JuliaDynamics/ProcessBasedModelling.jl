@@ -14,13 +14,23 @@ _literalvalue(x) = x
 _literalvalue(p::LiteralParameter) = p.p
 
 """
-    has_variable(eq, var)
+    has_variable(eqs, var)
 
 Return `true` if variable `var` exists in the equation(s) `eq`, `false` otherwise.
-Function works irrespectively if `var` is an `@variable` or `@parameter`.
 """
 function has_variable(eq::Equation, var)
     vars = get_variables(eq)
+    return any(isequal(var), vars)
+end
+has_variable(eqs, var) = any(eq -> has_variable(eq, var), eqs)
+
+"""
+    has_parameter(eqs, par)
+
+Return `true` if parameter `par` exists in the equation(s) `eqs`, `false` otherwise.
+"""
+function has_parameter(eq::Equation, var)
+    vars = get_parameters(eq)
     return any(isequal(var), vars)
 end
 has_variable(eqs, var) = any(eq -> has_variable(eq, var), eqs)
