@@ -33,7 +33,6 @@ symbolically using ModelingToolkit.jl (**MTK**). We define
 
 ```@example MAIN
 using ModelingToolkit
-using OrdinaryDiffEq: Tsit5
 
 @variables t # independent variable _without_ units
 @variables z(t) = 0.0
@@ -78,9 +77,10 @@ The error message is unhelpful as all variables are reported as "potentially mis
 At least on the basis of our scientific reasoning however, both ``x, z`` have an equation.
 It is ``y`` that ``x`` introduced that does not have an equation.
 Moreover, in our experience these error messages become increasingly less useful when a model has many equations and/or variables, as many variables get cited as "missing" from the variable map even when only one should be.
+This makes it difficult to quickly find out where the "mistake" happened in the equations.
 
-**PBM** resolves these problems and always gives accurate error messages when it comes to
-the construction of the system of equations.
+**PBM** resolves these problems and always gives accurate error messages when
+it comes to the construction of the system of equations.
 This is because on top of the variable map that MTK constructs automatically, **PBM** requires the user to implicitly provide a map of variables to processes that govern said variables. **PBM** creates the map automatically, the only thing the user has to do is to define the equations in terms of what [`processes_to_mtkmodel`](@ref) wants (which are either [`Process`](@ref)es or `Equation`s as above).
 
 Here is what the user defines to make the same system of equations via **PBM**:
