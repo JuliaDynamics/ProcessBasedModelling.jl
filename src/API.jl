@@ -64,7 +64,7 @@ function lhs(p::Process)
     elseif τ isa NoTimeDerivative || iszero(τ) # no time variability
         return v
     else # τ is either Num or Real
-        τvar = new_derived_named_parameter(v, τ, "τ", false)
+        τvar = new_derived_named_parameter(v, τ, "τ")
         return τvar*D(v)
     end
 end
