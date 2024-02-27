@@ -43,6 +43,13 @@ function _has_thing(var::Symbol, vars)
 end
 
 """
+    all_equations(model)
+
+Equivalent with `vcat(equations(model), observed(model))`.
+"""
+all_equations(model) = vcat(equations(model), observed(model))
+
+"""
     default_value(x)
 
 Return the default value of a symbolic variable `x` or `nothing`
