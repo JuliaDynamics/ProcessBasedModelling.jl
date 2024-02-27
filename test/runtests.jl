@@ -176,13 +176,13 @@ end
         AdditionProcess(TimeDerivative(q, x^2, 1.2), ExpRelaxation(q, x^2))
     ]
     mtk = processes_to_mtkmodel(processes)
-    eqs = equations(mtk)
+    mtk = structural_simplify(mtk)
+    eqs = all_equations(mtk)
     @test has_symbolic_var(eqs, x)
     @test has_symbolic_var(eqs, y)
     @test has_symbolic_var(eqs, :z)
-    @test has_symbolic_var(eqs, w)
+    @test has_symbolic_var(eqs, mtk.w)
     @test has_symbolic_var(eqs, q)
-    @test has_symbolic_var(eqs, :τ_z)
+    @test has_symbolic_var(eqs, mtk.τ_z)
     @test has_symbolic_var(eqs, :w_0)
-
 end
