@@ -14,22 +14,48 @@ _literalvalue(x) = x
 _literalvalue(p::LiteralParameter) = p.p
 
 """
-    has_variable(eq, var)
+    has_symbolic_var(eqs, var)
 
-Return `true` if variable `var` exists in the equation(s) `eq`, `false` otherwise.
-Function works irrespectively if `var` is an `@variable` or `@parameter`.
+Return `true` if symbolic variable `var` exists in the equation(s) `eq`, `false` otherwise.
+This works for either `@parameters` or `@variables`.
+If `var` is a `Symbol` isntead of a `Num`, all variables are converted to their names
+and equality is checked on the basis of the name only.
+
+    has_symbolic_var(model, var)
+
+When given a MTK model (such as `ODESystem`) search in _all_ the equations of the system,
+including observed variables.
 """
-function has_variable(eq::Equation, var)
+function has_symbolic_var(eq::Equation, var)
     vars = get_variables(eq)
+    return _has_thing(var, vars)
+end
+has_symbolic_var(eqs::Vector{Equation}, var) = any(eq -> has_symbolic_var(eq, var), eqs)
+has_symbolic_var(mtk, var) = has_symbolic_var(all_equations(mtk), var)
+
+function _has_thing(var::Num, vars)
     return any(isequal(var), vars)
 end
-has_variable(eqs, var) = any(eq -> has_variable(eq, var), eqs)
+function _has_thing(var::Symbol, vars)
+    vars = ModelingToolkit.getname.(vars)
+    var = ModelingToolkit.getname(var)
+    return any(isequal(var), vars)
+end
+
+"""
+    all_equations(model)
+
+Equivalent with `vcat(equations(model), observed(model))`.
+"""
+all_equations(model) = vcat(equations(model), observed(model))
 
 """
     default_value(x)
 
 Return the default value of a symbolic variable `x` or `nothing`
 if it doesn't have any. Return `x` if `x` is not a symbolic variable.
+The difference with `ModelingToolkit.getdefault` is that this function will
+not error on the absence of a default value.
 """
 default_value(x) = x
 default_value(x::Num) = default_value(x.val)
@@ -64,11 +90,14 @@ end
 
 If `value isa Num` return `value`.
 If `value isa LiteralParameter`, replace it with its literal value.
-Otherwise, create a new MTK `@parameter`
-whose name is created from `variable` (which could also be just a `Symbol`) by adding the `extra` string.
-If the keyword `prefix == false` the `extra` is added at the end after a `_`. Otherwise
-it is added at the start, then a `_` and then the variable name.
-The keyword `connector = "_"` is what connects the `extra` with the name.
+Otherwise, create a new MTK `@parameter` whose name is created from `variable`
+(which could also be just a `Symbol`) by adding the `extra` string.
+
+**Keywords**:
+
+- `prefix = true`: whether the `extra` is added at the start or the end, connecting
+  with the with the `connector`.
+- `connector = "_"`: what to use to connect `extra` with the name.
 
 
 For example,
@@ -83,10 +112,10 @@ new_derived_named_parameter(v, value::Num, extra::String; kw...) = value
 new_derived_named_parameter(v, value::LiteralParameter, extra::String; kw...) = value.p
 function new_derived_named_parameter(v, value::Real, extra; connector = "_", prefix = true)
     n = string(ModelingToolkit.getname(v))
-    newstring = if !(prefix)
-        n*connector*extra
-    else
+    newstring = if prefix
         extra*connector*n
+    else
+        n*connector*extra
     end
     new_derived_named_parameter(newstring, value)
 end

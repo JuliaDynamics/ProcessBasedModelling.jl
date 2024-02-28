@@ -25,8 +25,9 @@ export t
 export Process, ParameterProcess, TimeDerivative, ExpRelaxation, AdditionProcess
 export processes_to_mtkmodel
 export new_derived_named_parameter
-export has_variable, default_value
+export has_symbolic_var, default_value
 export @convert_to_parameters, LiteralParameter
-export lhs_variable, rhs, lhs
+# export lhs_variable, rhs, lhs # I am not sure whether these should be exported.
+export all_equations
 
 end
