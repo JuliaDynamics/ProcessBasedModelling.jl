@@ -26,7 +26,7 @@ In our experience, and as we also highlight explicitly in the online documentati
 
 ProcessBasedModelling.jl is particularly suited for developing a model about a physical/biological/whatever system and being able to try various physical "rules" (couplings, feedbacks, mechanisms, ...) for a given physical observable efficiently.
 This means switching arbitrarily between different processes that correspond to the same variable.
-Hence, the target application of ProcessBasedModelling.jl is to be a framework to develop field-specific libraries that offer predefined processes without themselves relying on the existence of context-specific predefined components. An example usage is in [EnergyBalanceModels.jl](https://github.com/JuliaDynamics/EnergyBalanceModels.jl).
+Hence, the target application of ProcessBasedModelling.jl is to be a framework to develop field-specific libraries that offer predefined processes without themselves relying on the existence of context-specific predefined components. An example usage is in [ConceptualClimateModels.jl](https://github.com/JuliaDynamics/ConceptualClimateModels.jl).
 
 Besides the informative errors, ProcessBasedModelling.jl also
 
