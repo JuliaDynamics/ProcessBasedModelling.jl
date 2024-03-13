@@ -111,10 +111,10 @@ telling us exactly which variable is missing, and because of which processes it 
 model = processes_to_mtkmodel(processes[[1, 3]])
 ```
 ```
-ERROR: ArgumentError: Variable x was introduced in process of variable z(t).
-However, a process for x was not provided,
-there is no default process for x, and x doesn't have a default value.
-Please provide a process for variable x.
+ERROR: ArgumentError: Variable x(t) was introduced in process of variable z(t).
+However, a process for x(t) was not provided,
+there is no default process for x(t), and (t)x doesn't have a default value.
+Please provide a process for variable x(t).
 ```
 
 If instead we "forgot" the ``y`` process, **PBM** will not error, but warn, and make ``y`` equal to a named parameter, since ``y`` has a default value:
@@ -129,8 +129,8 @@ parameters(model)
 
 and the warning thrown was:
 ```julia
-┌ Warning: Variable y was introduced in process of variable x(t).
-│ However, a process for y was not provided,
+┌ Warning: Variable y(t) was introduced in process of variable x(t).
+│ However, a process for y(t) was not provided,
 │ and there is no default process for it either.
 │ Since it has a default value, we make it a parameter by adding a process:
 │ `ParameterProcess(y)`.
