@@ -35,3 +35,5 @@ Besides the informative errors, ProcessBasedModelling.jl also
 3. Provides some utility functions for further building field-specific libraries.
 
 See the documentation online for details on how to use this package as well as examples highlighting its usefulness.
+
+ProcessBasedModelling.jl development is funded by UKRI's Engineering and Physical Sciences Research Council, grant no. EP/Y01653X/1 (grant agreement for a EU Marie Sklodowska-Curie Postdoctoral Fellowship).
