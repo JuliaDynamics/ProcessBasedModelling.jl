@@ -135,7 +135,8 @@ and default value the same as the value of `vars`. The macro leaves unaltered
 inputs that are of type `Num`, assumming they are already parameters.
 It also replaces [`LiteralParameter`](@ref) inputs with its literal values.
 This macro is extremely useful to convert e.g., keyword arguments into named parameters,
-while also allowing the user to give custom parameter names.
+while also allowing the user to give custom parameter names,
+or to leave some keywords as numeric literals.
 
 Example:
 
@@ -159,6 +160,7 @@ julia> default_value(A)
 
 julia> C # the binding `C` still corresponds to parameter named `:X`!
  X
+```
 """
 macro convert_to_parameters(vars...)
     expr = Expr(:block)
