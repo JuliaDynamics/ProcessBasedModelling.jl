@@ -173,7 +173,7 @@ end
         ParameterProcess(y),
         ExpRelaxation(z, x^2, 0.5),
         AdditionProcess(ParameterProcess(w), x^2),
-        AdditionProcess(TimeDerivative(q, x^2, 1.2), ExpRelaxation(q, x^2))
+        AdditionProcess(TimeDerivative(q, x^2, 1.2), ExpRelaxation(q, x^2), q ~ y*x)
     ]
     mtk = processes_to_mtkmodel(processes)
     mtk = structural_simplify(mtk)
@@ -186,4 +186,9 @@ end
     @test has_symbolic_var(mtk, q)
     @test has_symbolic_var(eqs, mtk.τ_z)
     @test has_symbolic_var(eqs, :w_0)
+end
+
+@testset "addition process error" begin
+    @variables x(t) y(t) z(t)
+    @test_throws ArgumentError AdditionProcess(x ~ 0.1z, y ~ x^2)
 end

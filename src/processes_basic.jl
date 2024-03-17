@@ -91,34 +91,37 @@ function rhs(e::ExpRelaxation)
 end
 
 """
-    AdditionProcess(process, added)
+    AdditionProcess(process, added...)
 
-A convenience process for adding `added` to the `rhs` of the given `process`.
-`added` can be a `Process` or `Equation`, in which case it is checked that
-the `lhs_variable` matches. Otherwise, it can be an arbitrary expression.
+A convenience process for adding processes `added` to the `rhs` of the given `process`.
+`added` can be a single symbolic expression. Otherwise,
+`added` can be a `Process` or `Equation`, or multitude of them, in which case it is checked
+that the `lhs_variable` across all added components matches the `process`.
 """
 struct AdditionProcess <: Process
     process
-    added
-    function AdditionProcess(process, added)
-        if typeof(added) <: Union{Process, Equation}
-            if ModelingToolkit.getname(lhs_variable(process)) ≠ ModelingToolkit.getname(lhs_variable(added))
-                @show lhs_variable(process), lhs_variable(added)
-                throw(ArgumentError("Added component does not have the same lhs variable."))
+    added::Vector
+    function AdditionProcess(process, added::Vector)
+        for add in added
+            if typeof(add) <: Union{Process, Equation}
+                v1, v2 = ModelingToolkit.getname(lhs_variable(process)), ModelingToolkit.getname(lhs_variable(add))
+                if v1 ≠ v2
+                    throw(ArgumentError(
+                        "Added processes do not have the same lhs variable. Got: $(v1), $(v2)"
+                    ))
+                end
             end
         end
         return new(process, added)
     end
 end
+AdditionProcess(process, added...) = AdditionProcess(process, collect(added))
+AdditionProcess(process, added::Num) = AdditionProcess(process, lhs(process) ~ added)
 
 lhs_variable(a::AdditionProcess) = lhs_variable(a.process)
 timescale(a::AdditionProcess) = timescale(a.process)
 
 function rhs(a::AdditionProcess)
-    if typeof(a.added) <: Union{Process, Equation}
-        plus = rhs(a.added)
-    else
-        plus = a.added
-    end
-    return rhs(a.process) + plus
+    exprs = [rhs(p) for p in a.added]
+    return +(rhs(a.process), exprs...)
 end
