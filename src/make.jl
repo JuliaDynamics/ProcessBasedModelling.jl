@@ -12,6 +12,7 @@ The model/system is _not_ structurally simplified.
 1. An `Equation`. The LHS format of the equation is limited.
    Let `x` be a `@variable` and `p` be a `@parameter`. Then, the LHS can only be one of:
    `x`, `Differential(t)(x)`, `Differential(t)(x)*p`, `p*Differential(t)(x)`.
+   Anything else will either error or fail unexpectedly.
 2. A vector of the above two, which is then expanded. This allows the convenience of
    functions representing a physical process that may require many equations to be defined.
 3. A ModelingToolkit.jl `XDESystem`, in which case the `equations` of the system are expanded
