@@ -11,10 +11,13 @@ The model/system is _not_ structurally simplified.
   variable resulting from an `@variables` call.
 - A vector of the above two, which is then expanded. This allows the convenience of
   functions representing a physical process that may require many equations to be defined.
+- A ModelingToolkit.jl `XDESystem`, in which case the `equations` of the system are expanded
+  as if they were given as a vector of equations like above. This allows the convenience
+  of coupling straightforwardly existing systems.
 
 `default` is a vector that can contain the first two possibilities only
-as it contains default processes that may be assigned to variables introduced in `processes`
-but they don't themselves have an assigned process.
+as it contains default processes that may be assigned to individual variables introduced in
+`processes` but they don't themselves have an assigned process.
 
 It is expected that downstream packages that use ProcessBasedModelling.jl to make a
 field-specific library implement a 1-argument version of `processes_to_mtkmodel`,
@@ -26,10 +29,10 @@ or provide a wrapper function for it, and add a default value for `default`.
 - `name = nameof(type)`: the name of the model
 - `independent = t`: the independent variable (default: `@variables t`).
   `t` is also exported by ProcessBasedModelling.jl for convenience.
-- `warn_defaut::Bool = true`: if `true`, throw a warning when a variable does not
+- `warn_default::Bool = true`: if `true`, throw a warning when a variable does not
   have an assigned process but it has a default value so that it becomes a parameter instead.
 """
-function processes_to_mtkmodel(_processes, _default = [];
+function processes_to_mtkmodel(_processes::Vector, _default = [];
         type = ODESystem, name = nameof(type), independent = t, warn_default::Bool = true,
     )
     processes = expand_multi_processes(_processes)
@@ -91,14 +94,19 @@ function processes_to_mtkmodel(_processes, _default = [];
 end
 
 function expand_multi_processes(procs::Vector)
+    etypes = Union{Vector, ODESystem, SDESystem, PDESystem}
     # Expand vectors of processes or ODESystems
-    !any(p -> p isa Vector, procs) && return procs
+    !any(p -> p isa etypes, procs) && return procs
     expanded = deepcopy(procs)
-    idxs = findall(p -> p isa Vector, procs)
+    idxs = findall(p -> p isa etypes, procs)
     multiprocs = expanded[idxs]
     deleteat!(expanded, idxs)
     for mp in multiprocs
-        append!(expanded, mp)
+        if mp isa Vector
+            append!(expanded, mp)
+        else # then it is XDE system
+            append!(expanded, equations(mp))
+        end
     end
     return expanded
 end
@@ -144,8 +152,8 @@ function nonunique(x::AbstractArray{T}) where T
     duplicatedset = Set{T}()
     duplicatedvector = Vector{T}()
     for i in x
-        if(i in uniqueset)
-            if !(i in duplicatedset)
+        if i ∈ uniqueset
+            if !(i ∈ duplicatedset)
                 push!(duplicatedset, i)
                 push!(duplicatedvector, i)
             end
