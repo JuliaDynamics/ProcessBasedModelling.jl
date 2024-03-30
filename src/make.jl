@@ -26,9 +26,11 @@ or provide a wrapper function for it, and add a default value for `default`.
 - `name = nameof(type)`: the name of the model
 - `independent = t`: the independent variable (default: `@variables t`).
   `t` is also exported by ProcessBasedModelling.jl for convenience.
+- `warn_defaut::Bool = true`: if `true`, throw a warning when a variable does not
+  have an assigned process but it has a default value so that it becomes a parameter instead.
 """
 function processes_to_mtkmodel(_processes, _default = [];
-        type = ODESystem, name = nameof(type), independent = t
+        type = ODESystem, name = nameof(type), independent = t, warn_default::Bool = true,
     )
     processes = expand_multi_processes(_processes)
     default = default_dict(_default)
@@ -62,13 +64,15 @@ function processes_to_mtkmodel(_processes, _default = [];
         else
             def_val = default_value(added_var) # utilize default value (if possible)
             if !isnothing(def_val)
-                @warn("""
-                Variable $(added_var) was introduced in process of variable $(introduced[added_var]).
-                However, a process for $(added_var) was not provided,
-                and there is no default process for it either.
-                Since it has a default value, we make it a parameter by adding a process:
-                `ParameterProcess($(ModelingToolkit.getname(added_var)))`.
-                """)
+                if warn_default == true
+                    @warn("""
+                    Variable $(added_var) was introduced in process of variable $(introduced[added_var]).
+                    However, a process for $(added_var) was not provided,
+                    and there is no default process for it either.
+                    Since it has a default value, we make it a parameter by adding a process:
+                    `ParameterProcess($(ModelingToolkit.getname(added_var)))`.
+                    """)
+                end
                 parproc = ParameterProcess(added_var)
                 push!(eqs, lhs(parproc) ~ rhs(parproc))
                 push!(lhs_vars, added_var)
