@@ -6,14 +6,17 @@ The model/system is _not_ structurally simplified.
 
 `processes` is a vector whose elements can be:
 
-- Any instance of a subtype of [`Process`](@ref).
-- An `Equation` which is of the form `variable ~ expression` with `variable` a single
-  variable resulting from an `@variables` call.
-- A vector of the above two, which is then expanded. This allows the convenience of
-  functions representing a physical process that may require many equations to be defined.
-- A ModelingToolkit.jl `XDESystem`, in which case the `equations` of the system are expanded
-  as if they were given as a vector of equations like above. This allows the convenience
-  of coupling straightforwardly existing systems.
+1. Any instance of a subtype of [`Process`](@ref). `Process` is a
+   wrapper around `Equation` that provides some conveniences, e.g., handling of timescales
+   or not having limitations on the left-hand-side (LHS) form.
+1. An `Equation`. The LHS format of the equation is limited.
+   Let `x` be a `@variable` and `p` be a `@parameter`. Then, the LHS can only be one of:
+   `x`, `Differential(t)(x)`, `Differential(t)(x)*p`, `p*Differential(t)(x)`.
+2. A vector of the above two, which is then expanded. This allows the convenience of
+   functions representing a physical process that may require many equations to be defined.
+3. A ModelingToolkit.jl `XDESystem`, in which case the `equations` of the system are expanded
+   as if they were given as a vector of equations like above. This allows the convenience
+   of straightforwardly coupling already existing systems.
 
 `default` is a vector that can contain the first two possibilities only
 as it contains default processes that may be assigned to individual variables introduced in
