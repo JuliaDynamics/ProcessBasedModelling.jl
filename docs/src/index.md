@@ -76,12 +76,15 @@ More variables than equations, here are the potential extra variable(s):
 The error message is unhelpful as all variables are reported as "potentially missing".
 At least on the basis of our scientific reasoning however, both ``x, z`` have an equation.
 It is ``y`` that ``x`` introduced that does not have an equation.
-Moreover, in our experience these error messages become increasingly less useful when a model has many equations and/or variables, as many variables get cited as "missing" from the variable map even when only one should be.
+Moreover, in our experience these error messages become increasingly less accurate or helpful when a model has many equations and/or variables.
 This makes it difficult to quickly find out where the "mistake" happened in the equations.
 
 **PBM** resolves these problems and always gives accurate error messages when
 it comes to the construction of the system of equations.
 This is because on top of the variable map that MTK constructs automatically, **PBM** requires the user to implicitly provide a map of variables to processes that govern said variables. **PBM** creates the map automatically, the only thing the user has to do is to define the equations in terms of what [`processes_to_mtkmodel`](@ref) wants (which are either [`Process`](@ref)es or `Equation`s as above).
+
+For the majority of cases, **PBM** can infer the LHS variable a process "defines" automatically, just by passing in a vector of `Equation`s, like in **MTK**.
+For cases where this is not possible a dedicated `Process` type is provided, whose subtypes act as wrappers around equations providing some additional conveniences.
 
 Here is what the user defines to make the same system of equations via **PBM**:
 
@@ -89,9 +92,9 @@ Here is what the user defines to make the same system of equations via **PBM**:
 using ProcessBasedModelling
 
 processes = [
-    ExpRelaxation(z, x^2),      # defines z, introduces x
-    Differential(t)(x) ~ 0.1*y, # defines x, introduces y
-    y ~ z - x,                  # defines y
+    ExpRelaxation(z, x^2),      # defines z, introduces x; `Process` subtype (optional)
+    Differential(t)(x) ~ 0.1*y, # defines x, introduces y; normal `Equation`
+    y ~ z - x,                  # defines y; normal `Equation`
 ]
 ```
 
