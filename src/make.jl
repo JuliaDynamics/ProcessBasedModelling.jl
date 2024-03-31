@@ -93,15 +93,16 @@ function processes_to_mtkmodel(_processes::Vector, _default = [];
             end
         end
     end
+    # return eqs
     sys = type(eqs, independent; name)
     return sys
 end
 
 function expand_multi_processes(procs::Vector)
     etypes = Union{Vector, ODESystem, SDESystem, PDESystem}
-    # Expand vectors of processes or ODESystems
     !any(p -> p isa etypes, procs) && return procs
-    expanded = deepcopy(procs)
+    # Expand vectors of processes or ODESystems
+    expanded = Any[procs...]
     idxs = findall(p -> p isa etypes, procs)
     multiprocs = expanded[idxs]
     deleteat!(expanded, idxs)

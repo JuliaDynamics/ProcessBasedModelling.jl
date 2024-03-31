@@ -104,6 +104,6 @@ function lhs_variable(x) # basically x is SymbolicUtils.BasicSymbolic{Real}
         end
     end
     # error if all failed
-    throw(ArgumentError("In the given equation, we analyze the LHS `$(e)` "*
+    throw(ArgumentError("We analyzed the LHS `$(x)` "*
     "but could not extract a single variable it represents."))
 end
