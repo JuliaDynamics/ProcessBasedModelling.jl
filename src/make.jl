@@ -1,5 +1,5 @@
 """
-    processes_to_mtkmodel(processes::Vector, default::Vector = []; kw...)
+    processes_to_mtkmodel(processes::Vector [, default]; kw...)
 
 Construct a ModelingToolkit.jl model/system using the provided `processes` and `default` processes.
 The model/system is _not_ structurally simplified.
@@ -19,9 +19,16 @@ The model/system is _not_ structurally simplified.
    as if they were given as a vector of equations like above. This allows the convenience
    of straightforwardly coupling already existing systems.
 
-`default` is a vector that can contain the first two possibilities only
-as it contains default processes that may be assigned to individual variables introduced in
-`processes` but they don't themselves have an assigned process.
+## Default processes
+
+`processes_to_mtkmodel` allows for specifying default processes by giving `default`.
+These default processes are assigned to variables introduced in the main input `processes`
+without themselves having an assigned process in the main input.
+
+`default` can be a `Vector` of individual processes (`Equation` or `Process`).
+Alternatively, `default` can be a `Module`. ProcessBasedModelling.jl allows modules to
+register their own default processes via the function [`register_default_process!`](@ref).
+These registered processes are used when `default` is a `Module`.
 
 It is expected that downstream packages that use ProcessBasedModelling.jl to make a
 field-specific library implement a 1-argument version of `processes_to_mtkmodel`,
