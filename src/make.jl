@@ -36,11 +36,17 @@ or provide a wrapper function for it, and add a default value for `default`.
 - `warn_default::Bool = true`: if `true`, throw a warning when a variable does not
   have an assigned process but it has a default value so that it becomes a parameter instead.
 """
-function processes_to_mtkmodel(_processes::Vector, _default = [];
+processes_to_mtkmodel(procs::Vector; kw...) =
+processes_to_mtkmodel(procs, Dict{Num, Any}(); kw...)
+processes_to_mtkmodel(procs::Vector, m::Module; kw...) =
+processes_to_mtkmodel(procs, default_processes(m); kw...)
+processes_to_mtkmodel(procs::Vector, v::Vector; kw...) =
+processes_to_mtkmodel(procs, default_dict(v); kw...)
+
+function processes_to_mtkmodel(_processes::Vector, default::Dict{Num, Any};
         type = ODESystem, name = nameof(type), independent = t, warn_default::Bool = true,
     )
     processes = expand_multi_processes(_processes)
-    default = default_dict(_default)
     # Setup: obtain lhs-variables so we can track new variables that are not
     # in this vector. The vector has to be of type `Num`
     lhs_vars = Num[lhs_variable(p) for p in processes]
