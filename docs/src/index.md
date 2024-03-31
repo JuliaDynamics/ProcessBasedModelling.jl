@@ -89,9 +89,9 @@ Here is what the user defines to make the same system of equations via **PBM**:
 using ProcessBasedModelling
 
 processes = [
-    ExpRelaxation(z, x^2),      # introduces x variable
-    TimeDerivative(x, 0.1*y),   # introduces y variable
-    y ~ z - x,                  # can be an equation because LHS is single variable
+    ExpRelaxation(z, x^2),      # defines z, introduces x
+    Differential(t)(x) ~ 0.1*y, # defines x, introduces y
+    y ~ z - x,                  # defines y
 ]
 ```
 
@@ -117,17 +117,20 @@ there is no default process for x(t), and (t)x doesn't have a default value.
 Please provide a process for variable x(t).
 ```
 
-If instead we "forgot" the ``y`` process, **PBM** will not error, but warn, and make ``y`` equal to a named parameter, since ``y`` has a default value:
+If instead we "forgot" the ``y`` process, **PBM** will not error, but warn, and make ``y`` equal to a named parameter, since ``y`` has a default value.
+So, running:
 ```@example MAIN
 model = processes_to_mtkmodel(processes[1:2])
 equations(model)
 ```
 
+Makes the named parameter:
+
 ```@example MAIN
 parameters(model)
 ```
 
-and the warning thrown was:
+and throws the warning:
 ```julia
 ┌ Warning: Variable y(t) was introduced in process of variable x(t).
 │ However, a process for y(t) was not provided,
