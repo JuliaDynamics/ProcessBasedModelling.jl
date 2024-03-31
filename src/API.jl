@@ -51,8 +51,9 @@ timescale(::Process) = NoTimeDerivative()
 
 """
     ProcessBasedModelling.lhs(p::Process)
+    ProcessBasedModelling.lhs(eq::Equation)
 
-Return the left-hand-side of the equation that `p` represents as an `Expression`.
+Return the right-hand-side of the equation governing the process.
 If `timescale` is implemented for `p`, typically `lhs` does not need to be as well.
 See [`Process`](@ref) for more.
 """
@@ -70,10 +71,9 @@ function lhs(p::Process)
 end
 
 """
-    ProcessBasedModelling.rhs(p::Process)
+    ProcessBasedModelling.rhs(process)
 
-Return the right-hand-side of the equation that `p` represents as an `Expression`.
-See [`Process`](@ref) for more.
+Return the right-hand-side of the equation governing the process.
 """
 function rhs(p::Process)
     error("Right-hand side (`rhs`) is not defined for process $(nameof(typeof(p))).")
@@ -81,13 +81,29 @@ end
 
 # Extensions for `Equation`:
 rhs(e::Equation) = e.rhs
-lhs(e::Equation) = lhs_variable(e)
-function lhs_variable(e::Equation)
-    x = e.lhs
-    # we first check whether `x` is a variable
-    if !is_variable(x)
-        throw(ArgumentError("In given equation $(e), the left-hand-side does "*
-        "not represent a single variable."))
+lhs(e::Equation) = e.lhs
+lhs_variable(e::Equation) = lhs_variable(lhs(e))
+lhs_variable(x::Num) = Num(lhs_variable(x.val))
+function lhs_variable(x) # basically x is SymbolicUtils.BasicSymbolic{Real}
+    # check whether `x` is a single variable already
+    if is_variable(x)
+        return x
     end
-    return x
+    # check Differential(t)(x)
+    if hasproperty(x, :f)
+        if x.f isa Differential
+            return x.arguments[1]
+        end
+    end
+    # check Differential(t)(x)*parameter
+    if hasproperty(x, :arguments)
+        args = x.arguments
+        di = findfirst(a -> hasproperty(a, :f) && a.f isa Differential, args)
+        if !isnothing(di)
+            return args[di].arguments[1]
+        end
+    end
+    # error if all failed
+    throw(ArgumentError("We analyzed the LHS `$(x)` "*
+    "but could not extract a single variable it represents."))
 end

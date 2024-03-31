@@ -192,3 +192,20 @@ end
     @variables x(t) y(t) z(t)
     @test_throws ArgumentError AdditionProcess(x ~ 0.1z, y ~ x^2)
 end
+
+@testset "ODESystem as process" begin
+    @variables z(t) = 0.0
+    @variables x(t) = 0.0
+    @variables y(t) = 0.0
+    @variables w(t) = 0.0
+    procs = [
+        ExpRelaxation(z, x^2, 1.0), # introduces x and y variables
+        TimeDerivative(x, 0.1*y),   # introduces y variable!
+        y ~ z-x,                    # is an equation, not a process!
+    ]
+
+    sys = processes_to_mtkmodel(procs)
+    sys2 = processes_to_mtkmodel([sys, w ~ x*y])
+    @test length(equations(sys2)) == 4
+    @test sort(ModelingToolkit.getname.(unknowns(sys2))) == [:w, :x, :y, :z]
+end
