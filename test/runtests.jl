@@ -210,16 +210,16 @@ end
     @test sort(ModelingToolkit.getname.(unknowns(sys2))) == [:w, :x, :y, :z]
 end
 
-@testset "registering default" begin
-    module TestDefault
-        using ProcessBasedModelling
-        @variables x(t) = 0.5 y(t) = 0.2
-        register_default_process!([
-            Differential(t)(x) ~ 0.2y - x,
-            y ~ x^2,
-        ], TestDefault)
-    end
+module TestDefault
+    using ProcessBasedModelling
+    @variables x(t) = 0.5 y(t) = 0.2
+    register_default_process!.([
+        Differential(t)(x) ~ 0.2y - x,
+        y ~ x^2,
+    ], Ref(TestDefault))
+end
 
+@testset "registering default" begin
     using .TestDefault
     @variables z(t) = 0.1
     eqs = [z ~ TestDefault.x - 1]
