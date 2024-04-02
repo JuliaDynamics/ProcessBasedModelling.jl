@@ -30,10 +30,6 @@ Alternatively, `default` can be a `Module`. ProcessBasedModelling.jl allows modu
 register their own default processes via the function [`register_default_process!`](@ref).
 These registered processes are used when `default` is a `Module`.
 
-It is expected that downstream packages that use ProcessBasedModelling.jl to make a
-field-specific library implement a 1-argument version of `processes_to_mtkmodel`,
-or provide a wrapper function for it, and add a default value for `default`.
-
 ## Keyword arguments
 
 - `type = ODESystem`: the model type to make
