@@ -6,13 +6,12 @@ const _DEFAULT_PROCESSES = Dict{Module, Dict}()
     register_default_process!(process, m::Module; warn = true)
 
 Register a `process` (`Equation` or `Process`) as a default process for its LHS variable
-in the list of registered default processes tracked by the given module.
+in the list of default processes tracked by the given module.
 If `warn`, throw a warning if a default process with same LHS variable already
 exists and will be overwritten.
 """
 function register_default_process!(process::Union{Process, Equation}, m::Module; warn = true)
-    mdict = get(_DEFAULT_PROCESSES, m, Dict{Num}{Any}())
-    _DEFAULT_PROCESSES[m] = mdict # ensure dict is stored as well
+    mdict = default_processes(m)
     lhsvar = lhs_variable(process)
     # overwritting here should never happen but oh well.
     if haskey(mdict, lhsvar) && warn
@@ -25,6 +24,11 @@ end
 """
     default_processes(m::Module)
 
-Return the dictionary of registered default processes tracked by the given module.
+Return the dictionary of default processes tracked by the given module.
 """
-default_processes(m::Module) = _DEFAULT_PROCESSES[m]
+function default_processes(m::Module)
+    if !haskey(_DEFAULT_PROCESSES, m)
+        _DEFAULT_PROCESSES[m] = Dict{Num}{Any}()
+    end
+    return _DEFAULT_PROCESSES[m]
+end
