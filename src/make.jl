@@ -1,5 +1,5 @@
 """
-    processes_to_mtkmodel(processes::Vector, default::Vector = []; kw...)
+    processes_to_mtkmodel(processes::Vector [, default]; kw...)
 
 Construct a ModelingToolkit.jl model/system using the provided `processes` and `default` processes.
 The model/system is _not_ structurally simplified.
@@ -19,13 +19,16 @@ The model/system is _not_ structurally simplified.
    as if they were given as a vector of equations like above. This allows the convenience
    of straightforwardly coupling already existing systems.
 
-`default` is a vector that can contain the first two possibilities only
-as it contains default processes that may be assigned to individual variables introduced in
-`processes` but they don't themselves have an assigned process.
+## Default processes
 
-It is expected that downstream packages that use ProcessBasedModelling.jl to make a
-field-specific library implement a 1-argument version of `processes_to_mtkmodel`,
-or provide a wrapper function for it, and add a default value for `default`.
+`processes_to_mtkmodel` allows for specifying default processes by giving `default`.
+These default processes are assigned to variables introduced in the main input `processes`
+without themselves having an assigned process in the main input.
+
+`default` can be a `Vector` of individual processes (`Equation` or `Process`).
+Alternatively, `default` can be a `Module`. ProcessBasedModelling.jl allows modules to
+register their own default processes via the function [`register_default_process!`](@ref).
+These registered processes are used when `default` is a `Module`.
 
 ## Keyword arguments
 
@@ -36,11 +39,17 @@ or provide a wrapper function for it, and add a default value for `default`.
 - `warn_default::Bool = true`: if `true`, throw a warning when a variable does not
   have an assigned process but it has a default value so that it becomes a parameter instead.
 """
-function processes_to_mtkmodel(_processes::Vector, _default = [];
+processes_to_mtkmodel(procs::Vector; kw...) =
+processes_to_mtkmodel(procs, Dict{Num, Any}(); kw...)
+processes_to_mtkmodel(procs::Vector, m::Module; kw...) =
+processes_to_mtkmodel(procs, default_processes(m); kw...)
+processes_to_mtkmodel(procs::Vector, v::Vector; kw...) =
+processes_to_mtkmodel(procs, default_dict(v); kw...)
+
+function processes_to_mtkmodel(_processes::Vector, default::Dict{Num, Any};
         type = ODESystem, name = nameof(type), independent = t, warn_default::Bool = true,
     )
     processes = expand_multi_processes(_processes)
-    default = default_dict(_default)
     # Setup: obtain lhs-variables so we can track new variables that are not
     # in this vector. The vector has to be of type `Num`
     lhs_vars = Num[lhs_variable(p) for p in processes]
