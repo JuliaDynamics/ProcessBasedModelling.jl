@@ -209,3 +209,22 @@ end
     @test length(equations(sys2)) == 4
     @test sort(ModelingToolkit.getname.(unknowns(sys2))) == [:w, :x, :y, :z]
 end
+
+@testset "registering default" begin
+    module TestDefault
+        using ProcessBasedModelling
+        @variables x(t) = 0.5 y(t) = 0.2
+        register_default_process!([
+            Differential(t)(x) ~ 0.2y - x,
+            y ~ x^2,
+        ], TestDefault)
+    end
+
+    using .TestDefault
+    @variables z(t) = 0.1
+    eqs = [z ~ TestDefault.x - 1]
+    mtk = processes_to_mtkmodel(eqs, TestDefault)
+    @test length(unknowns(mtk)) == 3
+    @test has_symbolic_var(mtk, z)
+    @test has_symbolic_var(mtk, TestDefault.x)
+end
