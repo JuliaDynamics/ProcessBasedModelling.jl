@@ -12,7 +12,8 @@ The type must extend the following functions from the module `ProcessBasedModell
 - (optional) `lhs(p)` which returns the left-hand-side. Let `τ = timescale(p)`.
   Then default `lhs(p)` behaviour depends on `τ` as follows:
   - Just `lhs_variable(p)` if `τ == NoTimeDerivative()`.
-  - `Differential(t)(p)` if `τ == nothing`.
+  - `Differential(t)(p)` if `τ == nothing`, or multiplied with a number
+    if `τ isa LiteralParameter`.
   - `τ_var*Differential(t)(p)` if `τ isa Union{Real, Num}`. If real,
     a new named parameter `τ_var` is created that has the prefix `:τ_` and then the
     lhs-variable name and has default value `τ`. Else if `Num`, `τ_var = τ` as given.
@@ -62,6 +63,8 @@ function lhs(p::Process)
     v = lhs_variable(p)
     if isnothing(τ) # time variability exists but timescale is nonexistent (unity)
         return D(v) # `D` is the MTK canonical variable for time derivative
+    elseif τ isa LiteralParameter
+        return τ.p*D(v)
     elseif τ isa NoTimeDerivative || iszero(τ) # no time variability
         return v
     else # τ is either Num or Real
