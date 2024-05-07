@@ -197,10 +197,12 @@ See the section on [automatic parameters](@ref auto_params) for more related aut
 such as the macro [`@convert_to_parameters`](@ref) which can be particularly useful
 when developing a field-specific library.
 
-## Main API function
+## Main API functions
 
 ```@docs
 processes_to_mtkmodel
+register_default_process!
+default_processes
 ```
 
 ## [Predefined `Process` subtypes](@id predefined_processes)
