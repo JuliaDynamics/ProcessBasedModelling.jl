@@ -2,9 +2,17 @@
     processes_to_mtkmodel(processes::Vector [, default]; kw...)
 
 Construct a ModelingToolkit.jl model/system using the provided `processes` and `default` processes.
-The model/system is _not_ structurally simplified.
+The model/system is _not_ structurally simplified. During construction, the following automations
+improve user experience:
 
-`processes` is a vector whose elements can be:
+- Variable(s) introduced in `processes` that does not itself have a process obtain
+  a default process from `default`.
+- If no default exists, but the variable(s) itself has a default numerical value,
+  a [`ParameterProcess`](@ref) is created for said variable and a warning is thrown.
+- Else, an informative error is thrown.
+- An error is also thrown if any variable has two or more processes assigned to it.
+
+`processes` is a `Vector` whose elements can be:
 
 1. Any instance of a subtype of [`Process`](@ref). `Process` is a
    wrapper around `Equation` that provides some conveniences, e.g., handling of timescales
@@ -12,29 +20,32 @@ The model/system is _not_ structurally simplified.
 1. An `Equation`. The LHS format of the equation is limited.
    Let `x` be a `@variable` and `p` be a `@parameter`. Then, the LHS can only be one of:
    `x`, `Differential(t)(x)`, `Differential(t)(x)*p`, `p*Differential(t)(x)`,
-   however, the versions with `p` may fail unexpectedly.
-   Anything else will either error or fail unexpectedly.
-2. A vector of the above two, which is then expanded. This allows the convenience of
-   functions representing a physical process that may require many equations to be defined.
+   however, the versions with `p` may fail unexpectedly. Anything else will error.
+2. A `Vector` of the above two, which is then expanded. This allows the convenience of
+   functions representing a physical process that may require many equations to be defined
+   (because e.g., they may introduce more variables).
 3. A ModelingToolkit.jl `XDESystem`, in which case the `equations` of the system are expanded
    as if they were given as a vector of equations like above. This allows the convenience
-   of straightforwardly coupling already existing systems.
+   of straightforwardly coupling with already existing `XDESystem`s.
 
 ## Default processes
 
 `processes_to_mtkmodel` allows for specifying default processes by giving `default`.
-These default processes are assigned to variables introduced in the main input `processes`
-without themselves having an assigned process in the main input.
+These default processes are assigned to variables introduced in the main input `processes`,
+but themselves do not have an assigned process in the main input.
 
 `default` can be a `Vector` of individual processes (`Equation` or `Process`).
-Alternatively, `default` can be a `Module`. ProcessBasedModelling.jl allows modules to
-register their own default processes via the function [`register_default_process!`](@ref).
+Alternatively, `default` can be a `Module`. The recommended way to build field-specific
+modelling libraries based on ProcessBasedModelling.jl is to define modules/submodules
+that offer a pool of pre-defined variables and processes.
+Modules may register their own default processes via the function
+[`register_default_process!`](@ref).
 These registered processes are used when `default` is a `Module`.
 
 ## Keyword arguments
 
-- `type = ODESystem`: the model type to make
-- `name = nameof(type)`: the name of the model
+- `type = ODESystem`: the model type to make.
+- `name = nameof(type)`: the name of the model.
 - `independent = t`: the independent variable (default: `@variables t`).
   `t` is also exported by ProcessBasedModelling.jl for convenience.
 - `warn_default::Bool = true`: if `true`, throw a warning when a variable does not
@@ -47,6 +58,8 @@ processes_to_mtkmodel(procs, default_processes(m); kw...)
 processes_to_mtkmodel(procs::Vector, v::Vector; kw...) =
 processes_to_mtkmodel(procs, default_dict(v); kw...)
 
+# The main implementation has the defaults to be a map from variable to process
+# because this simplifies a bit the code
 function processes_to_mtkmodel(_processes::Vector, default::Dict{Num, Any};
         type = ODESystem, name = nameof(type), independent = t, warn_default::Bool = true,
     )

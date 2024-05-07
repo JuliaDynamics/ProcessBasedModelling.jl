@@ -9,7 +9,7 @@
 ProcessBasedModelling.jl is an extension to [ModelingToolkit.jl](https://docs.sciml.ai/ModelingToolkit/stable/) (MTK) for building a model of equations using symbolic expressions.
 It is an alternative framework to MTK's [native component-based modelling](https://docs.sciml.ai/ModelingToolkit/stable/tutorials/acausal_components/), but, instead of components, there are "processes".
 This approach is useful in the modelling of physical/biological/whatever systems, where each variable corresponds to a particular physical concept or observable and there are few (or none) duplicate variables to make the definition of MTK "factories" worthwhile.
-On the other hand, there plenty of different physical representations, or _processes_ to represent a given physical concept.
+On the other hand, there plenty of different physical representations, or _processes_ to represent a given physical concept in equation form.
 In many scientific fields this approach parallels the modelling reasoning of the researcher more closely than the "components" approach.
 
 Beyond this reasoning style, the biggest strength of ProcessBasedModelling.jl is the **informative errors and automation** it provides regarding incorrect/incomplete equations. When building the MTK model via ProcessBasedModelling.jl the user provides a vector of "processes": equations or custom types that have a well defined and single left-hand-side variable.
@@ -22,7 +22,7 @@ This allows ProcessBasedModelling.jl to:
    - Else, throw an informative error saying exactly which originally provided variable introduced this new "process-less" variable.
 3. Throw an informative error if a variable has two processes assigned to it (by mistake).
 
-In our experience, and as we also highlight explicitly in the online documentation, this approach typically yields simpler, less ambiguous and more targeted warning or error messages than the native MTK one's, leading to faster identification and resolution of the problems with the composed equations.
+In our experience, and as we also highlight explicitly in the online documentation, this approach typically yields simpler, less ambiguous, and more targeted warning or error messages than the native MTK one's. This leads to faster identification and resolution of the problems with the composed equations.
 
 ProcessBasedModelling.jl is particularly suited for developing a model about a physical/biological/whatever system and being able to try various physical "rules" (couplings, feedbacks, mechanisms, ...) for a given physical observable efficiently.
 This means switching arbitrarily between different processes that correspond to the same variable.
@@ -36,4 +36,4 @@ Besides the informative errors, ProcessBasedModelling.jl also
 
 See the documentation online for details on how to use this package as well as examples highlighting its usefulness.
 
-ProcessBasedModelling.jl development is funded by UKRI's Engineering and Physical Sciences Research Council, grant no. EP/Y01653X/1 (grant agreement for a EU Marie Sklodowska-Curie Postdoctoral Fellowship).
+ProcessBasedModelling.jl development is funded by UKRI's Engineering and Physical Sciences Research Council, grant no. EP/Y01653X/1 (grant agreement for a EU Marie Sklodowska-Curie Postdoctoral Fellowship for George Datseris).
