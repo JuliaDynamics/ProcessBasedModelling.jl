@@ -203,6 +203,7 @@ when developing a field-specific library.
 processes_to_mtkmodel
 register_default_process!
 default_processes
+default_processes_eqs
 ```
 
 ## [Predefined `Process` subtypes](@id predefined_processes)
