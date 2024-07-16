@@ -76,7 +76,7 @@ function processes_to_mtkmodel(_processes::Vector, default::Dict{Num, Any};
     for proc in processes
         append_incomplete_variables!(incomplete, introduced, lhs_vars, proc)
         # add the generated equation in the pool of equations
-        push!(eqs, lhs(proc) ~ rhs(proc))
+        push!(eqs, equation(proc))
     end
     # Second pass: attempt to add default processes to incomplete variables
     # throw an error if default does not exist

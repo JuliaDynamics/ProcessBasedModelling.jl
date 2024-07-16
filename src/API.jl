@@ -110,3 +110,10 @@ function lhs_variable(x) # basically x is SymbolicUtils.BasicSymbolic{Real}
     throw(ArgumentError("We analyzed the LHS `$(x)` "*
     "but could not extract a single variable it represents."))
 end
+
+"""
+    equation(process)
+
+Return the `Equation` represented by the given process.
+"""
+equation(proc) = lhs(proc) ~ rhs(proc)
