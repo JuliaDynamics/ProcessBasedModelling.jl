@@ -67,7 +67,7 @@ function processes_to_mtkmodel(_processes::Vector, default::Dict{Num, Any};
     # Setup: obtain lhs-variables so we can track new variables that are not
     # in this vector. The vector has to be of type `Num`
     lhs_vars = Num[lhs_variable(p) for p in processes]
-    ensure_unique_vars(lhs_vars)
+    ensure_unique_vars(lhs_vars, processes)
     # First pass: generate equations from given processes
     # and collect variables without equations
     incomplete = Num[]
@@ -169,9 +169,18 @@ function append_incomplete_variables!(incomplete, introduced, lhs_vars, process)
     return
 end
 
-function ensure_unique_vars(lhs_vars)
+function ensure_unique_vars(lhs_vars, processes)
     nonun = nonunique(lhs_vars)
-    isempty(nonun) || error("The following variables have more than one processes assigned to them: $(nonun)")
+    isempty(nonun) && return # all good!
+    dupprocs = []
+    for var in nonun
+        idxs = findall(p -> Symbol(lhs_variable(p)) == Symbol(var), processes)
+        append!(dupprocs, processes[idxs])
+    end
+    error("""
+        The following variables have more than one processes assigned to them: $(nonun).
+        The duplicate processes are: $(dupprocs).
+    """)
     return
 end
 
