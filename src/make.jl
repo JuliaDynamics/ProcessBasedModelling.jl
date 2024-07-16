@@ -177,10 +177,14 @@ function ensure_unique_vars(lhs_vars, processes)
         idxs = findall(p -> Symbol(lhs_variable(p)) == Symbol(var), processes)
         append!(dupprocs, processes[idxs])
     end
-    error("""
-        The following variables have more than one processes assigned to them: $(nonun).
-        The duplicate processes are: $(dupprocs).
-    """)
+    errormsg = """
+    The following variables have more than one processes assigned to them: $(nonun).
+    The duplicate processes are:
+    """
+    for p in dupprocs
+        errormsg *= "\n"*sprint(show, p)
+    end
+    throw(ArgumentError(errormsg))
     return
 end
 
