@@ -160,6 +160,11 @@ end
         @test p == 0.5
     end
 
+    @testset "equation" begin
+        @variables x(t)
+        @test equation(ParameterProcess(x, LiteralParameter(0.5))) == (x ~ 0.5)
+    end
+
 end
 
 @testset "default processes, has_thing" begin

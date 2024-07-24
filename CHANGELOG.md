@@ -3,6 +3,11 @@
 ProcessBasedModelling.jl follows semver 2.0.
 Changelog is kept with respect to v1 release.
 
+## 1.3
+
+- Better error messages for duplicate processes given to `process_to_mtkmodel`.
+- New exported function `equation(p::Process)` that returns `lhs(p) ~ rhs(p)`.
+
 ## 1.2
 
 The API for default processes has been drastically improved.
