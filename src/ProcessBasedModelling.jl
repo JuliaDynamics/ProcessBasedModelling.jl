@@ -19,7 +19,7 @@ include("processes_basic.jl")
 
 export t
 export Process, ParameterProcess, TimeDerivative, ExpRelaxation, AdditionProcess
-export processes_to_mtkmodel
+export processes_to_mtkmodel, processes_to_mtkeqs
 export new_derived_named_parameter
 export has_symbolic_var, default_value
 export @convert_to_parameters, LiteralParameter

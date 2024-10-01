@@ -2,8 +2,11 @@
     processes_to_mtkmodel(processes::Vector [, default]; kw...)
 
 Construct a ModelingToolkit.jl model/system using the provided `processes` and `default` processes.
-The model/system is _not_ structurally simplified. During construction, the following automations
-improve user experience:
+The model/system is _not_ structurally simplified. Use the function
+`processes_to_mtkeqs` to obtain the raw `Vector{Equation}` before it is
+passed to the MTK model/system like `ODESystem`.
+
+During construction, the following automations improve user experience:
 
 - Variable(s) introduced in `processes` that does not itself have a process obtain
   a default process from `default`.
@@ -51,16 +54,24 @@ These registered processes are used when `default` is a `Module`.
 - `warn_default::Bool = true`: if `true`, throw a warning when a variable does not
   have an assigned process but it has a default value so that it becomes a parameter instead.
 """
-processes_to_mtkmodel(procs::Vector; kw...) =
-processes_to_mtkmodel(procs, Dict{Num, Any}(); kw...)
-processes_to_mtkmodel(procs::Vector, m::Module; kw...) =
-processes_to_mtkmodel(procs, default_processes(m); kw...)
-processes_to_mtkmodel(procs::Vector, v::Vector; kw...) =
-processes_to_mtkmodel(procs, default_dict(v); kw...)
+function processes_to_mtkmodel(args...;
+        type = ODESystem, name = nameof(type), independent = t, kw...,
+    )
+    eqs = processes_to_mtkeqs(args...; kw...)
+    sys = type(eqs, independent; name)
+    return sys
+end
+
+processes_to_mtkeqs(procs::Vector; kw...) =
+processes_to_mtkeqs(procs, Dict{Num, Any}(); kw...)
+processes_to_mtkeqs(procs::Vector, m::Module; kw...) =
+processes_to_mtkeqs(procs, default_processes(m); kw...)
+processes_to_mtkeqs(procs::Vector, v::Vector; kw...) =
+processes_to_mtkeqs(procs, default_dict(v); kw...)
 
 # The main implementation has the defaults to be a map from variable to process
 # because this simplifies a bit the code
-function processes_to_mtkmodel(_processes::Vector, default::Dict{Num, Any};
+function processes_to_mtkeqs(_processes::Vector, default::Dict{Num, Any};
         type = ODESystem, name = nameof(type), independent = t, warn_default::Bool = true,
     )
     processes = expand_multi_processes(_processes)
@@ -116,9 +127,7 @@ function processes_to_mtkmodel(_processes::Vector, default::Dict{Num, Any};
             end
         end
     end
-    # return eqs
-    sys = type(eqs, independent; name)
-    return sys
+    return eqs
 end
 
 function expand_multi_processes(procs::Vector)
