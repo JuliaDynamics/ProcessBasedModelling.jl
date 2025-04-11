@@ -48,6 +48,13 @@ TimeDerivative(a, b) = TimeDerivative(a, b, nothing)
 timescale(e::TimeDerivative) = e.timescale
 rhs(e::TimeDerivative) = e.expression
 
+"""
+    TimeDerivative(p::Process [, τ])
+
+Turn an existing process into a time derivative by creating
+`τ * Differential(t)(LHS(p)) ~ RHS(p)`.
+"""
+TimeDerivative(p::Process, t = nothing) = TimeDerivative(lhs(p), rhs(p), τ)
 
 """
     ExpRelaxation(variable, expression [, τ]) <: Process

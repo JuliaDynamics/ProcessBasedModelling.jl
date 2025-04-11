@@ -3,6 +3,10 @@
 ProcessBasedModelling.jl follows semver 2.0.
 Changelog is kept with respect to v1 release.
 
+## 1.4
+
+- Allow `TimeDerivative(p::Process)`.
+
 ## 1.3
 
 - Better error messages for duplicate processes given to `process_to_mtkmodel`.
