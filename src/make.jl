@@ -54,7 +54,7 @@ These registered processes are used when `default` is a `Module`.
 - `warn_default::Bool = true`: if `true`, throw a warning when a variable does not
   have an assigned process but it has a default value so that it becomes a parameter instead.
 - `check_rhs::Bool = true`: if `true`, check that the RHS of all processes is NOT an
-  `Equation`. Throw an informative error if there is one. This
+  `Equation` type. Throw an informative error if there is one. This
   helps scenarios where the RHS is wrongly an `Equation` assigning the LHS itself
   (has happened to me many times!).
 """
@@ -162,7 +162,7 @@ end
 
 function check_rhs_validity(processes)
     for p in processes
-        if rhs(p) <: Equation
+        if rhs(p) isa Equation
             lvar = lhs_variable(p)
             throw(ArgumentError("Process assigned to variable $(lvar) is ill defined. "*
                 "The RHS is an `<: Equation` type but it shouldn't be."
