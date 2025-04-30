@@ -3,6 +3,11 @@
 ProcessBasedModelling.jl follows semver 2.0.
 Changelog is kept with respect to v1 release.
 
+## 1.5
+
+- Add docstring to `processes_to_mtkeqs` and list it in the documentation.
+  (function was already exported but not made public in the docs)
+
 ## 1.4
 
 - Allow `TimeDerivative(p::Process)`.

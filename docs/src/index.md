@@ -201,6 +201,7 @@ when developing a field-specific library.
 
 ```@docs
 processes_to_mtkmodel
+processes_to_mtkeqs
 register_default_process!
 default_processes
 default_processes_eqs

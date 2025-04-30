@@ -3,7 +3,7 @@
 
 Construct a ModelingToolkit.jl model/system using the provided `processes` and `default` processes.
 The model/system is _not_ structurally simplified. Use the function
-`processes_to_mtkeqs` to obtain the raw `Vector{Equation}` before it is
+[`processes_to_mtkeqs`](@ref) to obtain the raw `Vector{Equation}` before it is
 passed to the MTK model/system like `ODESystem`.
 
 During construction, the following automations improve user experience:
@@ -62,6 +62,12 @@ function processes_to_mtkmodel(args...;
     return sys
 end
 
+"""
+    processes_to_mtkeqs(args...) → eqs
+
+Same as in [`processes_to_mtkmodel`](@ref), but return the created vector of `Equation`s
+before the are passed to an MTK system.
+"""
 processes_to_mtkeqs(procs::Vector; kw...) =
 processes_to_mtkeqs(procs, Dict{Num, Any}(); kw...)
 processes_to_mtkeqs(procs::Vector, m::Module; kw...) =
