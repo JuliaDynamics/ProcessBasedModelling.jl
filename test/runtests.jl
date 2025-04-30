@@ -1,6 +1,6 @@
 using ProcessBasedModelling
 using Test
-using OrdinaryDiffEq
+using OrdinaryDiffEqDefault
 
 @testset "construction + evolution" begin
     # The model, as defined below, is bistable due to ice albedo feedback
@@ -61,7 +61,7 @@ using OrdinaryDiffEq
     ufs = []
     for u0 in u0s
         p = ODEProblem(sys, u0, (0.0, 1000.0*365*24*60*60.0))
-        sol = solve(p, Tsit5())
+        sol = solve(p, Tsit5(); abstol = 1e-9, reltol = 1e-9)
         push!(ufs, sol.u[end])
     end
 
