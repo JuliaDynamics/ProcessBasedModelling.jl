@@ -3,6 +3,10 @@
 ProcessBasedModelling.jl follows semver 2.0.
 Changelog is kept with respect to v1 release.
 
+## 1.6
+
+- Added an additional step when constructing the raw equation vector to be passed into an MTK model. In this step it is also checked that the RHS for all equations is an `Expression`. Sometimes it is easy to get confused and mess up and make it be an `Equation` (i.e., assigning the LHS-variable twice). This now will give an informative error.
+
 ## 1.5
 
 - Add docstring to `processes_to_mtkeqs` and list it in the documentation.

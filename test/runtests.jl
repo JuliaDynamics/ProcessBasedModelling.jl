@@ -215,6 +215,20 @@ end
     @test sort(ModelingToolkit.getname.(unknowns(sys2))) == [:w, :x, :y, :z]
 end
 
+@testset "equation in RHS" begin
+    @variables z(t) = 0.0
+    @variables x(t) = 0.0
+    @variables y(t) = 0.0
+    procs = [
+        ExpRelaxation(z, x^2, 1.0), # introduces x and y variables
+        y ~ z-x,                    # is an equation, not a process!
+        z ~ (z ~ x^2),
+    ]
+    @test_throws ["an `<: Equation` type"] processes_to_mtkeqs(procs)
+end
+
+
+
 module TestDefault
     using ProcessBasedModelling
     @variables x(t) = 0.5 y(t) = 0.2
