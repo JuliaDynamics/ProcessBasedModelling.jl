@@ -1,7 +1,7 @@
 using ProcessBasedModelling
 using Test
 using OrdinaryDiffEqTsit5
-
+@testset "ProcessBasedModelling" begin
 @testset "construction + evolution" begin
     # The model, as defined below, is bistable due to ice albedo feedback
     # so two initial conditions should go to two attractors
@@ -247,3 +247,6 @@ end
     @test has_symbolic_var(mtk, z)
     @test has_symbolic_var(mtk, TestDefault.x)
 end
+
+
+end # @testset
