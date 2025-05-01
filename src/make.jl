@@ -86,7 +86,7 @@ function processes_to_mtkeqs(_processes::Vector, default::Dict{Num, Any};
         check_rhs = true,
     )
     processes = expand_multi_processes(_processes)
-    check_rhs_validity(processes)
+    check_rhs && check_rhs_validity(processes)
     # Setup: obtain lhs-variables so we can track new variables that are not
     # in this vector. The vector has to be of type `Num`
     lhs_vars = Num[lhs_variable(p) for p in processes]
