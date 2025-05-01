@@ -1,6 +1,17 @@
 using ProcessBasedModelling
 using Test
 using OrdinaryDiffEqTsit5
+
+# This module is used in one of the tests
+module TestDefault
+    using ProcessBasedModelling
+    @variables x(t) = 0.5 y(t) = 0.2
+    register_default_process!.([
+        Differential(t)(x) ~ 0.2y - x,
+        y ~ x^2,
+    ], Ref(TestDefault))
+end
+
 @testset "ProcessBasedModelling" begin
 @testset "construction + evolution" begin
     # The model, as defined below, is bistable due to ice albedo feedback
@@ -225,17 +236,6 @@ end
         z ~ (z ~ x^2),
     ]
     @test_throws ["an `<: Equation` type"] processes_to_mtkeqs(procs)
-end
-
-
-
-module TestDefault
-    using ProcessBasedModelling
-    @variables x(t) = 0.5 y(t) = 0.2
-    register_default_process!.([
-        Differential(t)(x) ~ 0.2y - x,
-        y ~ x^2,
-    ], Ref(TestDefault))
 end
 
 @testset "registering default" begin
