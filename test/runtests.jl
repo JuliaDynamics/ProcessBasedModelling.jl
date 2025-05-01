@@ -1,6 +1,6 @@
 using ProcessBasedModelling
 using Test
-using OrdinaryDiffEqDefault
+using OrdinaryDiffEqTsit5
 
 @testset "construction + evolution" begin
     # The model, as defined below, is bistable due to ice albedo feedback
