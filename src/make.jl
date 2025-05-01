@@ -82,8 +82,7 @@ processes_to_mtkeqs(procs, default_dict(v); kw...)
 # The main implementation has the defaults to be a map from variable to process
 # because this simplifies a bit the code
 function processes_to_mtkeqs(_processes::Vector, default::Dict{Num, Any};
-        type = ODESystem, name = nameof(type), independent = t, warn_default::Bool = true,
-        check_rhs = true,
+        warn_default::Bool = true, check_rhs::Bool = true,
     )
     processes = expand_multi_processes(_processes)
     check_rhs && check_rhs_validity(processes)
