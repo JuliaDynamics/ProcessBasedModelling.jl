@@ -1,7 +1,18 @@
 using ProcessBasedModelling
 using Test
-using OrdinaryDiffEq
+using OrdinaryDiffEqTsit5
 
+# This module is used in one of the tests
+module TestDefault
+    using ProcessBasedModelling
+    @variables x(t) = 0.5 y(t) = 0.2
+    register_default_process!.([
+        Differential(t)(x) ~ 0.2y - x,
+        y ~ x^2,
+    ], Ref(TestDefault))
+end
+
+@testset "ProcessBasedModelling" begin
 @testset "construction + evolution" begin
     # The model, as defined below, is bistable due to ice albedo feedback
     # so two initial conditions should go to two attractors
@@ -61,7 +72,7 @@ using OrdinaryDiffEq
     ufs = []
     for u0 in u0s
         p = ODEProblem(sys, u0, (0.0, 1000.0*365*24*60*60.0))
-        sol = solve(p, Tsit5())
+        sol = solve(p, Tsit5(); abstol = 1e-9, reltol = 1e-9)
         push!(ufs, sol.u[end])
     end
 
@@ -215,13 +226,16 @@ end
     @test sort(ModelingToolkit.getname.(unknowns(sys2))) == [:w, :x, :y, :z]
 end
 
-module TestDefault
-    using ProcessBasedModelling
-    @variables x(t) = 0.5 y(t) = 0.2
-    register_default_process!.([
-        Differential(t)(x) ~ 0.2y - x,
-        y ~ x^2,
-    ], Ref(TestDefault))
+@testset "equation in RHS" begin
+    @variables z(t) = 0.0
+    @variables x(t) = 0.0
+    @variables y(t) = 0.0
+    procs = [
+        ExpRelaxation(z, x^2, 1.0), # introduces x and y variables
+        y ~ z-x,                    # is an equation, not a process!
+        z ~ (z ~ x^2),
+    ]
+    @test_throws ["an `<: Equation` type"] processes_to_mtkeqs(procs)
 end
 
 @testset "registering default" begin
@@ -233,3 +247,6 @@ end
     @test has_symbolic_var(mtk, z)
     @test has_symbolic_var(mtk, TestDefault.x)
 end
+
+
+end # @testset
