@@ -238,6 +238,16 @@ end
     @test_throws ["an `<: Equation` type"] processes_to_mtkeqs(procs)
 end
 
+@testset "not actual process" begin
+    @variables z(t) = 0.0
+    @variables x(t) = 0.0
+    procs = [
+        ExpRelaxation(x, x^2, 1.0),
+        -x,                    # is an equation, not a process!
+    ]
+    @test_throws ["not actually"] processes_to_mtkeqs(procs)
+end
+
 @testset "registering default" begin
     using .TestDefault
     @variables z(t) = 0.1

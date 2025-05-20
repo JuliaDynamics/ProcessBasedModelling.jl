@@ -14,6 +14,8 @@ During construction, the following automations improve user experience:
   a [`ParameterProcess`](@ref) is created for said variable(s) and a warning is thrown.
 - Else, an informative error is thrown.
 - An error is also thrown if any variable has two or more processes assigned to it.
+- An error is thrown if any of the given processes are not actually processes,
+  but rather expressions without a LHF-variable.
 
 `processes` is a `Vector` whose elements can be:
 
@@ -161,7 +163,9 @@ end
 
 function check_rhs_validity(processes)
     for p in processes
-        if rhs(p) isa Equation
+        if !(typeof(p) <: Union{Process, Equation})
+            throw(ArgumentError("Process $(p) is not actually a process!"))
+        elseif rhs(p) isa Equation
             lvar = lhs_variable(p)
             throw(ArgumentError("Process assigned to variable $(lvar) is ill defined. "*
                 "The RHS is an `<: Equation` type but it shouldn't be."

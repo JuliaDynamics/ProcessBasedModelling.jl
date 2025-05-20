@@ -3,6 +3,11 @@
 ProcessBasedModelling.jl follows semver 2.0.
 Changelog is kept with respect to v1 release.
 
+## 1.7
+
+- Added an additional check when constructing the raw equations that catches
+  errors of typing `x = expression` instead of `x ~ expression` as a process.
+
 ## 1.6
 
 - Added an additional step when constructing the raw equation vector to be passed into an MTK model. In this step it is also checked that the RHS for all equations is an `Expression`. Sometimes it is easy to get confused and mess up and make it be an `Equation` (i.e., assigning the LHS-variable twice). This now will give an informative error.
