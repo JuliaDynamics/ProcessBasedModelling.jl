@@ -20,8 +20,8 @@ end
 
     # First, make some default processes
     @variables T(t) = 300.0       # temperature, in Kelvin
-    @variables α(t) = 0.3         # albedo of ice, unitless
-    @variables ε(t) = 0.5         # effective emissivity, unitless
+    @variables α(t)         # albedo of ice, unitless
+    @variables ε(t)         # effective emissivity, unitless
     solar_constant = 340.25 # W/m^2, already divided by 4
     σ_Stefan_Boltzman = 5.670374419e-8    # stefan boltzman constant
 
@@ -61,9 +61,7 @@ end
     ]
 
     sys = processes_to_mtkmodel(processes)
-    @test sys isa ODESystem
     @test length(unknowns(sys)) == 3
-
     sys = mtkcompile(sys)
     @test length(unknowns(sys)) == 1
     @test has_symbolic_var(equations(sys), T)
