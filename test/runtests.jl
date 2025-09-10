@@ -64,7 +64,7 @@ end
     @test sys isa ODESystem
     @test length(unknowns(sys)) == 3
 
-    sys = structural_simplify(sys)
+    sys = mtkcompile(sys)
     @test length(unknowns(sys)) == 1
     @test has_symbolic_var(equations(sys), T)
 
@@ -87,13 +87,11 @@ end
     ]
 
     sys = processes_to_mtkmodel(processes)
-    @test sys isa ODESystem
     @test length(unknowns(sys)) == 3
 
-    sys = structural_simplify(sys)
+    sys = mtkcompile(sys)
     @test length(unknowns(sys)) == 1
     @test has_symbolic_var(equations(sys), T)
-
 end
 
 @testset "add missing processes" begin
@@ -192,7 +190,7 @@ end
         AdditionProcess(TimeDerivative(q, x^2, 1.2), ExpRelaxation(q, x^2), q ~ y*x)
     ]
     mtk = processes_to_mtkmodel(processes)
-    mtk = structural_simplify(mtk)
+    mtk = mtkcompile(mtk)
     eqs = all_equations(mtk)
     @test has_symbolic_var(eqs, x)
     @test has_symbolic_var(eqs, y)
@@ -209,7 +207,7 @@ end
     @test_throws ArgumentError AdditionProcess(x ~ 0.1z, y ~ x^2)
 end
 
-@testset "ODESystem as process" begin
+@testset "System as process" begin
     @variables z(t) = 0.0
     @variables x(t) = 0.0
     @variables y(t) = 0.0

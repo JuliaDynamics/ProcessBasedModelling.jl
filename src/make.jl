@@ -1,10 +1,9 @@
 """
     processes_to_mtkmodel(processes::Vector [, default]; kw...)
 
-Construct a ModelingToolkit.jl model/system using the provided `processes` and `default` processes.
-The model/system is _not_ structurally simplified. Use the function
-[`processes_to_mtkeqs`](@ref) to obtain the raw `Vector{Equation}` before it is
-passed to the MTK model/system like `ODESystem`.
+Construct a ModelingToolkit.jl model using the provided `processes` and `default` processes.
+The model is _not_ `mtkcompile`-d. Use the function
+[`processes_to_mtkeqs`](@ref) to obtain the raw `Vector{Equation}`.
 
 During construction, the following automations improve user experience:
 
@@ -49,9 +48,8 @@ These registered default processes are used when `default` is a `Module`.
 
 ## Keyword arguments
 
-- `type = ODESystem`: the model type to make.
-- `name = nameof(type)`: the name of the model.
-- `independent = t`: the independent variable (default: `@variables t`).
+- `name = :model`: the name of the model.
+- `independent = t`: the independent variable (default: `@independent_variables t`).
   `t` is also exported by ProcessBasedModelling.jl for convenience.
 - `warn_default::Bool = true`: if `true`, throw a warning when a variable does not
   have an assigned process but it has a default value so that it becomes a parameter instead.
@@ -61,10 +59,10 @@ These registered default processes are used when `default` is a `Module`.
   (has happened to me many times!).
 """
 function processes_to_mtkmodel(args...;
-        type = ODESystem, name = nameof(type), independent = t, kw...,
+        type = System, name = :model, independent = t, kw...,
     )
     eqs = processes_to_mtkeqs(args...; kw...)
-    sys = type(eqs, independent; name)
+    sys = System(eqs, independent; name)
     return sys
 end
 

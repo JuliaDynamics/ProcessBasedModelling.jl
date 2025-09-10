@@ -3,6 +3,10 @@
 ProcessBasedModelling.jl follows semver 2.0.
 Changelog is kept with respect to v1 release.
 
+## 1.8
+
+- Updated to ModelingToolkit.jl v10. `type` keyword in `processes_to_mtkmodel` is now no longer used.
+
 ## 1.7
 
 - Added an additional check when constructing the raw equations that catches
