@@ -142,9 +142,9 @@ function processes_to_mtkeqs(_processes::Vector, default::Dict{Num, Any};
 end
 
 function expand_multi_processes(procs::Vector)
-    etypes = Union{Vector, ODESystem, SDESystem, PDESystem}
+    etypes = Union{Vector, System}
     !any(p -> p isa etypes, procs) && return procs
-    # Expand vectors of processes or ODESystems
+    # Expand vectors of processes or Systems
     expanded = Any[procs...]
     idxs = findall(p -> p isa etypes, procs)
     multiprocs = expanded[idxs]
@@ -152,7 +152,7 @@ function expand_multi_processes(procs::Vector)
     for mp in multiprocs
         if mp isa Vector
             append!(expanded, mp)
-        else # then it is XDE system
+        else # then it is System
             append!(expanded, equations(mp))
         end
     end
