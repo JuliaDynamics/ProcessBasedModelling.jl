@@ -6,7 +6,7 @@
 [![codecov](https://codecov.io/gh/JuliaDynamics/ProcessBasedModelling.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/JuliaDynamics/ProcessBasedModelling.jl)
 [![Package Downloads](https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/ProcessBasedModelling)](https://pkgs.genieframework.com?packages=ProcessBasedModelling)
 
-ProcessBasedModelling.jl is an extension to [ModelingToolkitBase.jl](https://docs.sciml.ai/ModelingToolkit/stable/) (and the wider MTK ecosystem) for building a model of equations using symbolic expressions.
+ProcessBasedModelling.jl is an extension to [ModelingToolkit.jl](https://docs.sciml.ai/ModelingToolkit/stable/) (and the wider MTK ecosystem) for building a model of equations using symbolic expressions.
 It is an alternative framework to MTK's [native component-based modelling](https://docs.sciml.ai/ModelingToolkit/stable/tutorials/acausal_components/), but, instead of components, there are "processes".
 This approach is useful in the modelling of physical/biological/whatever systems, where each variable corresponds to a particular physical concept or observable and there are few (or none) duplicate variables to make the definition of MTK "factories" worthwhile.
 On the other hand, there plenty of different physical representations, or _processes_ to represent a given physical concept in equation form.

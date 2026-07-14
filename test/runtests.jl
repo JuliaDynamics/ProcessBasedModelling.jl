@@ -19,7 +19,7 @@ end
     # If that's the case, we are sure model construction was valid
 
     # First, make some default processes
-    @variables T(t) = 300.0       # temperature, in Kelvin
+    @variables T(t) = 300.0 # temperature, in Kelvin
     @variables α(t)         # albedo of ice, unitless
     @variables ε(t)         # effective emissivity, unitless
     solar_constant = 340.25 # W/m^2, already divided by 4

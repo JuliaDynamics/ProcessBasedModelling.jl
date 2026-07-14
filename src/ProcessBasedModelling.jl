@@ -8,8 +8,8 @@ module ProcessBasedModelling
 end ProcessBasedModelling
 
 using Reexport
-using ModelingToolkitBase: t_nounits as t, D_nounits as D
-@reexport using ModelingToolkitBase
+using ModelingToolkit: t_nounits as t, D_nounits as D
+@reexport using ModelingToolkit
 
 include("API.jl")
 include("utils.jl")

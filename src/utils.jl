@@ -111,7 +111,7 @@ Now `p` will be a parameter with name `:τ_x` and default value `0.5`.
 new_derived_named_parameter(v, value::Num, extra::String; kw...) = value
 new_derived_named_parameter(v, value::LiteralParameter, extra::String; kw...) = value.p
 function new_derived_named_parameter(v, value::Real, extra; connector = "_", prefix = true)
-    n = string(getname(v))
+    n = string(Symbolics.getname(v))
     newstring = if prefix
         extra*connector*n
     else
@@ -174,7 +174,7 @@ macro convert_to_parameters(vars...)
                 $binding isa Num, $binding,
                 # Else, convert to modeling toolkit param.
                 # This syntax was obtained by doing @macroexpand @parameters A = 0.5
-                (ModelingToolkitBase.toparam)((Symbolics.wrap)((SymbolicUtils.setmetadata)((Symbolics.setdefaultval)((Sym){Real}($varname), $binding), Symbolics.VariableSource, (:parameters, $varname))))
+                (ModelingToolkit.toparam)((Symbolics.wrap)((SymbolicUtils.setmetadata)((Symbolics.setdefaultval)((Sym){Real}($varname), $binding), Symbolics.VariableSource, (:parameters, $varname))))
                 ))
             )
         )

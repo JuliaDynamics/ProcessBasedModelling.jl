@@ -8,7 +8,7 @@ ProcessBasedModelling
 !!! note "Default `t` is unitless"
     Like ModelingToolkit.jl, ProcessBasedModelling.jl also exports `t` as the independent variable representing time.
     However, instead of the default `t` of ModelingToolkit.jl, here `t` is unitless.
-    Do `t = ModelingToolkitBase.t` to obtain the unitful version of `t`.
+    Do `t = ModelingToolkit.t` to obtain the unitful version of `t`.
 
 ## Usage
 
@@ -31,10 +31,10 @@ Let's say we want to build the system of equations
 y = z - x
 ```
 
-symbolically using ModelingToolkitBase.jl (**MTKBase**). We define
+symbolically using ModelingToolkit.jl (**MTKBase**). We define
 
 ```@example MAIN
-using ProcessBasedModelling
+using ProcessBasedModelling # re-exports ModelingToolkit
 
 @variables t # independent variable _without_ units
 @variables z(t) = 0.0
@@ -43,8 +43,8 @@ using ProcessBasedModelling
 ```
 ProcessBasedModelling.jl (**PBM**) strongly recommends that all defined variables have a default value at definition point. Here we didn't do this for ``x`` to illustrate what how such an "omission" will be treated by **PBM**.
 
-!!! note "ModelingToolkitBase.jl is re-exported"
-    ProcessBasedModelling.jl re-exports the whole `ModelingToolkitBase` package,
+!!! note "ModelingToolkit.jl is re-exported"
+    ProcessBasedModelling.jl re-exports the whole `ModelingToolkit` package,
     so you don't need to be `using` both of them, just `using ProcessBasedModelling`.
 
 To make the equations we want, we can use MTK directly, and call

@@ -5,8 +5,7 @@ Changelog is kept with respect to v1 release.
 
 ## 1.9
 
-Dependency moved from ModelingToolkit.jl to ModelingToolkitBase.jl, moving in the process to MTK v11.
-ProcessBasedModelling.jl was not using any of the advanced functionality of the AGPL licensed MTK parts so this was safe to do.
+Updated to ModelingToolkit.jl v11, which also comes with a dependency to AGPL license.
 
 ## 1.8
 
