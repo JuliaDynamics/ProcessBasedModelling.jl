@@ -19,8 +19,9 @@ _literalvalue(p::LiteralParameter) = p.p
     has_symbolic_var(eqs, var)
 
 Return `true` if symbolic variable `var` exists in the equation(s) `eq`, `false` otherwise.
-This works for either `@parameters` or `@variables`.
-If `var` is a `Symbol` isntead of a `Num`, all variables are converted to their names
+This works for either `@parameters` or `@variables` and currently only compares versus these
+objects (i.e., it ignores `Differentials` or other complex structures).
+If `var` is a `Symbol` instead of a `Num`, all variables are converted to their names
 and equality is checked on the basis of the name only.
 
     has_symbolic_var(model, var)
@@ -29,7 +30,8 @@ When given a MTK model (such as `ODESystem`) search in _all_ the equations of th
 including observed variables.
 """
 function has_symbolic_var(eq::Equation, var)
-    vars = get_variables(eq)
+    vars = get_variables(eq) # this includes differentials
+    vars = filter(x -> is_parameter(x) || is_variable(x), vars)
     return _has_thing(var, vars)
 end
 has_symbolic_var(eqs::Vector{Equation}, var) = any(eq -> has_symbolic_var(eq, var), eqs)
@@ -57,7 +59,7 @@ all_equations(model) = vcat(equations(model), observed(model))
 Return the default value of a symbolic variable `x` or `nothing`
 if it doesn't have any. Return `x` if `x` is not a symbolic variable.
 The difference with `ModelingToolkit.getdefault` is that this function will
-not error on the absence of a default value.
+not error in the absence of a default value.
 """
 default_value(x) = x
 default_value(x::Num) = default_value(Symbolics.unwrap(x))
@@ -75,6 +77,12 @@ is_variable(x::Num) = is_variable(Symbolics.unwrap(x))
 function is_variable(x::Symbolics.SymbolicT)
     value = getmetadata(x, Symbolics.VariableSource, nothing)
     return value isa Tuple{Symbol, Symbol} && value[1] == :variables
+end
+
+is_parameter(x::Num) = is_parameter(Symbolics.unwrap(x))
+function is_parameter(x::Symbolics.SymbolicT)
+    value = getmetadata(x, Symbolics.VariableSource, nothing)
+    return value isa Tuple{Symbol, Symbol} && value[1] == :parameters
 end
 
 """
