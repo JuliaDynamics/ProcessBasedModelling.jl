@@ -166,7 +166,7 @@ macro convert_to_parameters(vars...)
                 $binding isa Num, $binding,
                 # Else, convert to modeling toolkit param.
                 # This syntax was obtained by doing @macroexpand @parameters A = 0.5
-                (ModelingToolkit.toparam)((Symbolics.wrap)((SymbolicUtils.setmetadata)((Symbolics.setdefaultval)((SymbolicUtils.Sym){Real}($varname), $binding), Symbolics.VariableSource, (:parameters, $varname))))
+                (ModelingToolkit.toparam_validate)((Symbolics.wrap)((SymbolicUtils.setmetadata)((Symbolics.setdefaultval)((SymbolicUtils.Sym){SymbolicUtils.SymReal}($varname; type = Real), $binding), Symbolics.VariableSource, (:parameters, $varname))))
                 ))
             )
         )

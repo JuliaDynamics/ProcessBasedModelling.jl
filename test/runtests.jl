@@ -12,7 +12,7 @@ module TestDefault
     ], Ref(TestDefault))
 end
 
-@testset "ProcessBasedModelling" begin
+# @testset "ProcessBasedModelling" begin
 @testset "construction + evolution" begin
     # The model, as defined below, is bistable due to ice albedo feedback
     # so two initial conditions should go to two attractors
@@ -255,4 +255,4 @@ end
 end
 
 
-end # @testset
+# end # @testset
