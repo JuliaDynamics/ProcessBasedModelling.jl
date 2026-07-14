@@ -66,7 +66,7 @@ end
     @test length(unknowns(sys)) == 1
     @test has_symbolic_var(equations(sys), T)
 
-    u0s = [[300.0], [100.0]]
+    u0s = [[T => 300.0], [T => 100.0]]
     ufs = []
     for u0 in u0s
         p = ODEProblem(sys, u0, (0.0, 1000.0*365*24*60*60.0))
