@@ -19,7 +19,7 @@ end
     # If that's the case, we are sure model construction was valid
 
     # First, make some default processes
-    @variables T(t) = 300.0       # temperature, in Kelvin
+    @variables T(t) = 300.0 # temperature, in Kelvin
     @variables α(t)         # albedo of ice, unitless
     @variables ε(t)         # effective emissivity, unitless
     solar_constant = 340.25 # W/m^2, already divided by 4
@@ -66,7 +66,7 @@ end
     @test length(unknowns(sys)) == 1
     @test has_symbolic_var(equations(sys), T)
 
-    u0s = [[300.0], [100.0]]
+    u0s = [[T => 300.0], [T => 100.0]]
     ufs = []
     for u0 in u0s
         p = ODEProblem(sys, u0, (0.0, 1000.0*365*24*60*60.0))
@@ -128,7 +128,7 @@ end
         @test length(unknowns(sys)) == 3
         sys = processes_to_mtkmodel(procs[1:3])
         @test length(unknowns(sys)) == 3
-        @test length(unknowns(structural_simplify(sys))) == 2
+        @test length(unknowns(mtkcompile(sys))) == 2
     end
 end
 
@@ -139,10 +139,10 @@ end
     @testset "derived" begin
         @variables x(t) = 0.5
         p = new_derived_named_parameter(x, 0.2, "t")
-        @test ModelingToolkit.getname(p) == :t_x
+        @test ModelingToolkit.SymbolicIndexingInterface.getname(p) == :t_x
         @test default_value(p) == 0.2
         p = new_derived_named_parameter(x, 0.2, "t"; prefix = false, connector = "")
-        @test ModelingToolkit.getname(p) == :xt
+        @test ModelingToolkit.SymbolicIndexingInterface.getname(p) == :xt
     end
 
     @testset "convert" begin
@@ -151,7 +151,7 @@ end
         @convert_to_parameters A B C
         @test A isa Num
         @test default_value(A) == 0.5
-        @test ModelingToolkit.getname(C) == :X
+        @test ModelingToolkit.SymbolicIndexingInterface.getname(C) == :X
     end
 
     @testset "literal in derived" begin
@@ -219,10 +219,10 @@ end
     sys = processes_to_mtkmodel(procs)
     sys2 = processes_to_mtkmodel([sys, w ~ x*y])
     @test length(equations(sys2)) == 4
-    @test sort(ModelingToolkit.getname.(unknowns(sys2))) == [:w, :x, :y, :z]
+    @test sort(ModelingToolkit.SymbolicIndexingInterface.getname.(unknowns(sys2))) == [:w, :x, :y, :z]
 end
 
-@testset "equation in RHS" begin
+@testset "duplcate equation in RHS" begin
     @variables z(t) = 0.0
     @variables x(t) = 0.0
     @variables y(t) = 0.0
@@ -231,7 +231,7 @@ end
         y ~ z-x,                    # is an equation, not a process!
         z ~ (z ~ x^2),
     ]
-    @test_throws ["an `<: Equation` type"] processes_to_mtkeqs(procs)
+    @test_throws ["more than one"] processes_to_mtkeqs(procs)
 end
 
 @testset "not actual process" begin

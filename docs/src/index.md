@@ -31,10 +31,10 @@ Let's say we want to build the system of equations
 y = z - x
 ```
 
-symbolically using ModelingToolkit.jl (**MTK**). We define
+symbolically using ModelingToolkit.jl (**MTKBase**). We define
 
 ```@example MAIN
-using ModelingToolkit
+using ProcessBasedModelling # re-exports ModelingToolkit
 
 @variables t # independent variable _without_ units
 @variables z(t) = 0.0
@@ -69,7 +69,7 @@ model = ODESystem(eqs[1:2], t; name = :example)
 
 ```julia
 # here is the error
-model = structural_simplify(model)
+model = mtkcompile(model)
 ```
 ```
 ERROR: ExtraVariablesSystemException: The system is unbalanced.

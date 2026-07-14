@@ -86,7 +86,7 @@ end
 rhs(e::Equation) = e.rhs
 lhs(e::Equation) = e.lhs
 lhs_variable(e::Equation) = lhs_variable(lhs(e))
-lhs_variable(x::Num) = Num(lhs_variable(x.val))
+lhs_variable(x::Num) = Num(lhs_variable(Symbolics.unwrap(x)))
 function lhs_variable(x) # basically x is SymbolicUtils.BasicSymbolic{Real}
     # check whether `x` is a single variable already
     if is_variable(x)
@@ -95,15 +95,15 @@ function lhs_variable(x) # basically x is SymbolicUtils.BasicSymbolic{Real}
     # check Differential(t)(x)
     if hasproperty(x, :f)
         if x.f isa Differential
-            return x.arguments[1]
+            return x.args[1]
         end
     end
     # check Differential(t)(x)*parameter
-    if hasproperty(x, :arguments)
-        args = x.arguments
+    if hasproperty(x, :args)
+        args = x.args
         di = findfirst(a -> hasproperty(a, :f) && a.f isa Differential, args)
         if !isnothing(di)
-            return args[di].arguments[1]
+            return args[di].args[1]
         end
     end
     # error if all failed

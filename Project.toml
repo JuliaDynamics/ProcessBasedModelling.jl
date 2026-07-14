@@ -1,13 +1,15 @@
 name = "ProcessBasedModelling"
 uuid = "ca969041-2cf3-4b10-bc21-86f4417093eb"
 authors = ["Datseris <datseris.george@gmail.com>"]
-version = "1.8.0"
+version = "1.9.0"
 
 [deps]
 ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
+Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
 Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 
 [compat]
-ModelingToolkit = "10.0"
+ModelingToolkit = "11"
+Symbolics = "7"
 Reexport = "1.2"
 julia = "1.9.0"

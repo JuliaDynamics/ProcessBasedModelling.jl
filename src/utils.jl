@@ -1,3 +1,5 @@
+import Symbolics
+
 """
     LiteralParameter(p)
 
@@ -17,8 +19,9 @@ _literalvalue(p::LiteralParameter) = p.p
     has_symbolic_var(eqs, var)
 
 Return `true` if symbolic variable `var` exists in the equation(s) `eq`, `false` otherwise.
-This works for either `@parameters` or `@variables`.
-If `var` is a `Symbol` isntead of a `Num`, all variables are converted to their names
+This works for either `@parameters` or `@variables` and currently only compares versus these
+objects (i.e., it ignores `Differentials` or other complex structures).
+If `var` is a `Symbol` instead of a `Num`, all variables are converted to their names
 and equality is checked on the basis of the name only.
 
     has_symbolic_var(model, var)
@@ -27,7 +30,8 @@ When given a MTK model (such as `ODESystem`) search in _all_ the equations of th
 including observed variables.
 """
 function has_symbolic_var(eq::Equation, var)
-    vars = get_variables(eq)
+    vars = get_variables(eq) # this includes differentials
+    vars = filter(x -> is_parameter(x) || is_variable(x), vars)
     return _has_thing(var, vars)
 end
 has_symbolic_var(eqs::Vector{Equation}, var) = any(eq -> has_symbolic_var(eq, var), eqs)
@@ -37,8 +41,8 @@ function _has_thing(var::Num, vars)
     return any(isequal(var), vars)
 end
 function _has_thing(var::Symbol, vars)
-    vars = ModelingToolkit.getname.(vars)
-    var = ModelingToolkit.getname(var)
+    vars = getname.(vars)
+    var = getname(var)
     return any(isequal(var), vars)
 end
 
@@ -55,34 +59,30 @@ all_equations(model) = vcat(equations(model), observed(model))
 Return the default value of a symbolic variable `x` or `nothing`
 if it doesn't have any. Return `x` if `x` is not a symbolic variable.
 The difference with `ModelingToolkit.getdefault` is that this function will
-not error on the absence of a default value.
+not error in the absence of a default value.
 """
 default_value(x) = x
-default_value(x::Num) = default_value(x.val)
-function default_value(x::ModelingToolkit.SymbolicUtils.Symbolic)
-    if haskey(x.metadata, ModelingToolkit.Symbolics.VariableDefaultValue)
-        return x.metadata[ModelingToolkit.Symbolics.VariableDefaultValue]
-    else
-        @warn("No default value assigned to variable/parameter $(x).")
-        return nothing
-    end
+default_value(x::Num) = default_value(Symbolics.unwrap(x))
+function default_value(x::Symbolics.SymbolicT)
+    val = Symbolics.getmetadata(x, Symbolics.VariableDefaultValue, nothing)
+    isnothing(val) && @warn("No default value assigned to variable/parameter $(x).")
+    return val
 end
+
 # trick to get default values for state variables:
 # Base.Fix1(getindex, ModelingToolkit.defaults(ssys)).(states(ssys))
 # while `defaults` returns all default assignments.
 
-is_variable(x::Num) = is_variable(x.val)
-function is_variable(x)
-    if x isa ModelingToolkit.SymbolicUtils.Symbolic
-        if isnothing(x.metadata)
-            return false
-        end
-        if haskey(x.metadata, ModelingToolkit.Symbolics.VariableSource)
-            src = x.metadata[ModelingToolkit.Symbolics.VariableSource]
-            return first(src) == :variables
-        end
-    end
-    return false
+is_variable(x::Num) = is_variable(Symbolics.unwrap(x))
+function is_variable(x::Symbolics.SymbolicT)
+    value = getmetadata(x, Symbolics.VariableSource, nothing)
+    return value isa Tuple{Symbol, Symbol} && value[1] == :variables
+end
+
+is_parameter(x::Num) = is_parameter(Symbolics.unwrap(x))
+function is_parameter(x::Symbolics.SymbolicT)
+    value = getmetadata(x, Symbolics.VariableSource, nothing)
+    return value isa Tuple{Symbol, Symbol} && value[1] == :parameters
 end
 
 """
@@ -111,7 +111,7 @@ Now `p` will be a parameter with name `:τ_x` and default value `0.5`.
 new_derived_named_parameter(v, value::Num, extra::String; kw...) = value
 new_derived_named_parameter(v, value::LiteralParameter, extra::String; kw...) = value.p
 function new_derived_named_parameter(v, value::Real, extra; connector = "_", prefix = true)
-    n = string(ModelingToolkit.getname(v))
+    n = string(Symbolics.getname(v))
     newstring = if prefix
         extra*connector*n
     else
@@ -134,7 +134,7 @@ Convert all variables `vars` into `@parameters` with name the same as `vars`
 and default value the same as the value of `vars`. The macro leaves unaltered
 inputs that are of type `Num`, assumming they are already parameters.
 It also replaces [`LiteralParameter`](@ref) inputs with its literal values.
-This macro is extremely useful to convert e.g., keyword arguments into named parameters,
+This macro is useful to convert e.g., keyword arguments into named parameters,
 while also allowing the user to give custom parameter names,
 or to leave some keywords as numeric literals.
 
@@ -174,7 +174,7 @@ macro convert_to_parameters(vars...)
                 $binding isa Num, $binding,
                 # Else, convert to modeling toolkit param.
                 # This syntax was obtained by doing @macroexpand @parameters A = 0.5
-                (ModelingToolkit.toparam)((Symbolics.wrap)((SymbolicUtils.setmetadata)((Symbolics.setdefaultval)((Sym){Real}($varname), $binding), Symbolics.VariableSource, (:parameters, $varname))))
+                (ModelingToolkit.toparam_validate)((Symbolics.wrap)((SymbolicUtils.setmetadata)((Symbolics.setdefaultval)((SymbolicUtils.Sym){SymbolicUtils.SymReal}($varname; type = Real), $binding), Symbolics.VariableSource, (:parameters, $varname))))
                 ))
             )
         )
