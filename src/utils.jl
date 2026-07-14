@@ -59,7 +59,7 @@ not error on the absence of a default value.
 """
 default_value(x) = x
 default_value(x::Num) = default_value(x.val)
-function default_value(x::ModelingToolkitBase.SymbolicUtils.Symbolic)
+function default_value(x::ModelingToolkitBase.Symbolic)
     if haskey(x.metadata, ModelingToolkitBase.Symbolics.VariableDefaultValue)
         return x.metadata[ModelingToolkitBase.Symbolics.VariableDefaultValue]
     else
@@ -73,7 +73,7 @@ end
 
 is_variable(x::Num) = is_variable(x.val)
 function is_variable(x)
-    if x isa ModelingToolkitBase.SymbolicUtils.Symbolic
+    if x isa ModelingToolkitBase.Symbolic
         if isnothing(x.metadata)
             return false
         end
