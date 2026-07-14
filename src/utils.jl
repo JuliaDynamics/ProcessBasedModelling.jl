@@ -72,17 +72,9 @@ end
 # while `defaults` returns all default assignments.
 
 is_variable(x::Num) = is_variable(Symbolics.unwrap(x))
-function is_variable(x)
-    if x isa Symbolics.SymbolicT
-        if isnothing(x.metadata)
-            return false
-        end
-        if haskey(x.metadata, Symbolics.VariableSource)
-            src = x.metadata[Symbolics.VariableSource]
-            return first(src) == :variables
-        end
-    end
-    return false
+function is_variable(x::Symbolics.SymbolicT)
+    value = getmetadata(x, Symbolics.VariableSource, nothing)
+    return value isa Tuple{Symbol, Symbol} && value[1] == :variables
 end
 
 """
@@ -174,7 +166,7 @@ macro convert_to_parameters(vars...)
                 $binding isa Num, $binding,
                 # Else, convert to modeling toolkit param.
                 # This syntax was obtained by doing @macroexpand @parameters A = 0.5
-                (ModelingToolkit.toparam)((Symbolics.wrap)((SymbolicUtils.setmetadata)((Symbolics.setdefaultval)((Sym){Real}($varname), $binding), Symbolics.VariableSource, (:parameters, $varname))))
+                (ModelingToolkit.toparam)((Symbolics.wrap)((SymbolicUtils.setmetadata)((Symbolics.setdefaultval)((SymbolicUtils.Sym){Real}($varname), $binding), Symbolics.VariableSource, (:parameters, $varname))))
                 ))
             )
         )

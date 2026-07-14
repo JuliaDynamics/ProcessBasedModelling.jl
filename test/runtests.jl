@@ -139,10 +139,10 @@ end
     @testset "derived" begin
         @variables x(t) = 0.5
         p = new_derived_named_parameter(x, 0.2, "t")
-        @test getname(p) == :t_x
+        @test ModelingToolkit.SymbolicIndexingInterface.getname(p) == :t_x
         @test default_value(p) == 0.2
         p = new_derived_named_parameter(x, 0.2, "t"; prefix = false, connector = "")
-        @test getname(p) == :xt
+        @test ModelingToolkit.SymbolicIndexingInterface.getname(p) == :xt
     end
 
     @testset "convert" begin
@@ -151,7 +151,7 @@ end
         @convert_to_parameters A B C
         @test A isa Num
         @test default_value(A) == 0.5
-        @test getname(C) == :X
+        @test ModelingToolkit.SymbolicIndexingInterface.getname(C) == :X
     end
 
     @testset "literal in derived" begin
@@ -219,7 +219,7 @@ end
     sys = processes_to_mtkmodel(procs)
     sys2 = processes_to_mtkmodel([sys, w ~ x*y])
     @test length(equations(sys2)) == 4
-    @test sort(getname.(unknowns(sys2))) == [:w, :x, :y, :z]
+    @test sort(ModelingToolkit.SymbolicIndexingInterface.getname.(unknowns(sys2))) == [:w, :x, :y, :z]
 end
 
 @testset "equation in RHS" begin

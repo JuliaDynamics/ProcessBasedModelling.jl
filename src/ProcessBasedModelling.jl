@@ -11,6 +11,8 @@ using Reexport
 using ModelingToolkit: t_nounits as t, D_nounits as D
 @reexport using ModelingToolkit
 
+getname = ModelingToolkit.SymbolicIndexingInterface.getname
+
 include("API.jl")
 include("utils.jl")
 include("default.jl")
