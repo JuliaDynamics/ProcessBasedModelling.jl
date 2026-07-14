@@ -62,7 +62,7 @@ not error on the absence of a default value.
 default_value(x) = x
 default_value(x::Num) = default_value(Symbolics.unwrap(x))
 function default_value(x::Symbolics.SymbolicT)
-    val = Symbolics.getdefaultval(x)
+    val = Symbolics.getmetadata(x, Symbolics.VariableDefaultValue, nothing)
     isnothing(val) && @warn("No default value assigned to variable/parameter $(x).")
     return val
 end
