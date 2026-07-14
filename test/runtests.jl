@@ -12,7 +12,7 @@ module TestDefault
     ], Ref(TestDefault))
 end
 
-# @testset "ProcessBasedModelling" begin
+@testset "ProcessBasedModelling" begin
 @testset "construction + evolution" begin
     # The model, as defined below, is bistable due to ice albedo feedback
     # so two initial conditions should go to two attractors
@@ -222,7 +222,7 @@ end
     @test sort(ModelingToolkit.SymbolicIndexingInterface.getname.(unknowns(sys2))) == [:w, :x, :y, :z]
 end
 
-@testset "equation in RHS" begin
+@testset "duplcate equation in RHS" begin
     @variables z(t) = 0.0
     @variables x(t) = 0.0
     @variables y(t) = 0.0
@@ -231,7 +231,7 @@ end
         y ~ z-x,                    # is an equation, not a process!
         z ~ (z ~ x^2),
     ]
-    @test_throws ["an `<: Equation` type"] processes_to_mtkeqs(procs)
+    @test_throws ["more than one"] processes_to_mtkeqs(procs)
 end
 
 @testset "not actual process" begin
@@ -255,4 +255,4 @@ end
 end
 
 
-# end # @testset
+end # @testset
