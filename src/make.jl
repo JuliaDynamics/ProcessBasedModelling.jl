@@ -122,7 +122,7 @@ function processes_to_mtkeqs(_processes::Vector, default::Dict{Num, Any};
                     However, a process for $(added_var) was not provided,
                     and there is no default process for it either.
                     Since it has a default value, we make it a parameter by adding a process:
-                    `ParameterProcess($(ModelingToolkit.getname(added_var)))`.
+                    `ParameterProcess($(getname(added_var)))`.
                     """)
                 end
                 parproc = ParameterProcess(added_var)

@@ -128,7 +128,7 @@ end
         @test length(unknowns(sys)) == 3
         sys = processes_to_mtkmodel(procs[1:3])
         @test length(unknowns(sys)) == 3
-        @test length(unknowns(structural_simplify(sys))) == 2
+        @test length(unknowns(mtkcompile(sys))) == 2
     end
 end
 
@@ -139,10 +139,10 @@ end
     @testset "derived" begin
         @variables x(t) = 0.5
         p = new_derived_named_parameter(x, 0.2, "t")
-        @test ModelingToolkit.getname(p) == :t_x
+        @test getname(p) == :t_x
         @test default_value(p) == 0.2
         p = new_derived_named_parameter(x, 0.2, "t"; prefix = false, connector = "")
-        @test ModelingToolkit.getname(p) == :xt
+        @test getname(p) == :xt
     end
 
     @testset "convert" begin
@@ -151,7 +151,7 @@ end
         @convert_to_parameters A B C
         @test A isa Num
         @test default_value(A) == 0.5
-        @test ModelingToolkit.getname(C) == :X
+        @test getname(C) == :X
     end
 
     @testset "literal in derived" begin
@@ -219,7 +219,7 @@ end
     sys = processes_to_mtkmodel(procs)
     sys2 = processes_to_mtkmodel([sys, w ~ x*y])
     @test length(equations(sys2)) == 4
-    @test sort(ModelingToolkit.getname.(unknowns(sys2))) == [:w, :x, :y, :z]
+    @test sort(getname.(unknowns(sys2))) == [:w, :x, :y, :z]
 end
 
 @testset "equation in RHS" begin

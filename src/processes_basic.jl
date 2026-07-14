@@ -111,7 +111,7 @@ struct AdditionProcess <: Process
     function AdditionProcess(process, added::Vector)
         for add in added
             if typeof(add) <: Union{Process, Equation}
-                v1, v2 = ModelingToolkit.getname(lhs_variable(process)), ModelingToolkit.getname(lhs_variable(add))
+                v1, v2 = getname(lhs_variable(process)), getname(lhs_variable(add))
                 if v1 ≠ v2
                     throw(ArgumentError(
                         "Added processes do not have the same lhs variable. Got: $(v1), $(v2)"

@@ -8,7 +8,7 @@ ProcessBasedModelling
 !!! note "Default `t` is unitless"
     Like ModelingToolkit.jl, ProcessBasedModelling.jl also exports `t` as the independent variable representing time.
     However, instead of the default `t` of ModelingToolkit.jl, here `t` is unitless.
-    Do `t = ModelingToolkit.t` to obtain the unitful version of `t`.
+    Do `t = ModelingToolkitBase.t` to obtain the unitful version of `t`.
 
 ## Usage
 
@@ -31,10 +31,10 @@ Let's say we want to build the system of equations
 y = z - x
 ```
 
-symbolically using ModelingToolkit.jl (**MTK**). We define
+symbolically using ModelingToolkitBase.jl (**MTKBase**). We define
 
 ```@example MAIN
-using ModelingToolkit
+using ProcessBasedModelling
 
 @variables t # independent variable _without_ units
 @variables z(t) = 0.0
@@ -43,8 +43,8 @@ using ModelingToolkit
 ```
 ProcessBasedModelling.jl (**PBM**) strongly recommends that all defined variables have a default value at definition point. Here we didn't do this for ``x`` to illustrate what how such an "omission" will be treated by **PBM**.
 
-!!! note "ModelingToolkit.jl is re-exported"
-    ProcessBasedModelling.jl re-exports the whole `ModelingToolkit` package,
+!!! note "ModelingToolkitBase.jl is re-exported"
+    ProcessBasedModelling.jl re-exports the whole `ModelingToolkitBase` package,
     so you don't need to be `using` both of them, just `using ProcessBasedModelling`.
 
 To make the equations we want, we can use MTK directly, and call
@@ -69,7 +69,7 @@ model = ODESystem(eqs[1:2], t; name = :example)
 
 ```julia
 # here is the error
-model = structural_simplify(model)
+model = mtkcompile(model)
 ```
 ```
 ERROR: ExtraVariablesSystemException: The system is unbalanced.

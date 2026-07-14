@@ -37,8 +37,8 @@ function _has_thing(var::Num, vars)
     return any(isequal(var), vars)
 end
 function _has_thing(var::Symbol, vars)
-    vars = ModelingToolkit.getname.(vars)
-    var = ModelingToolkit.getname(var)
+    vars = getname.(vars)
+    var = getname(var)
     return any(isequal(var), vars)
 end
 
@@ -59,9 +59,9 @@ not error on the absence of a default value.
 """
 default_value(x) = x
 default_value(x::Num) = default_value(x.val)
-function default_value(x::ModelingToolkit.SymbolicUtils.Symbolic)
-    if haskey(x.metadata, ModelingToolkit.Symbolics.VariableDefaultValue)
-        return x.metadata[ModelingToolkit.Symbolics.VariableDefaultValue]
+function default_value(x::ModelingToolkitBase.SymbolicUtils.Symbolic)
+    if haskey(x.metadata, ModelingToolkitBase.Symbolics.VariableDefaultValue)
+        return x.metadata[ModelingToolkitBase.Symbolics.VariableDefaultValue]
     else
         @warn("No default value assigned to variable/parameter $(x).")
         return nothing
@@ -73,12 +73,12 @@ end
 
 is_variable(x::Num) = is_variable(x.val)
 function is_variable(x)
-    if x isa ModelingToolkit.SymbolicUtils.Symbolic
+    if x isa ModelingToolkitBase.SymbolicUtils.Symbolic
         if isnothing(x.metadata)
             return false
         end
-        if haskey(x.metadata, ModelingToolkit.Symbolics.VariableSource)
-            src = x.metadata[ModelingToolkit.Symbolics.VariableSource]
+        if haskey(x.metadata, ModelingToolkitBase.Symbolics.VariableSource)
+            src = x.metadata[ModelingToolkitBase.Symbolics.VariableSource]
             return first(src) == :variables
         end
     end
@@ -111,7 +111,7 @@ Now `p` will be a parameter with name `:τ_x` and default value `0.5`.
 new_derived_named_parameter(v, value::Num, extra::String; kw...) = value
 new_derived_named_parameter(v, value::LiteralParameter, extra::String; kw...) = value.p
 function new_derived_named_parameter(v, value::Real, extra; connector = "_", prefix = true)
-    n = string(ModelingToolkit.getname(v))
+    n = string(getname(v))
     newstring = if prefix
         extra*connector*n
     else
@@ -174,7 +174,7 @@ macro convert_to_parameters(vars...)
                 $binding isa Num, $binding,
                 # Else, convert to modeling toolkit param.
                 # This syntax was obtained by doing @macroexpand @parameters A = 0.5
-                (ModelingToolkit.toparam)((Symbolics.wrap)((SymbolicUtils.setmetadata)((Symbolics.setdefaultval)((Sym){Real}($varname), $binding), Symbolics.VariableSource, (:parameters, $varname))))
+                (ModelingToolkitBase.toparam)((Symbolics.wrap)((SymbolicUtils.setmetadata)((Symbolics.setdefaultval)((Sym){Real}($varname), $binding), Symbolics.VariableSource, (:parameters, $varname))))
                 ))
             )
         )
