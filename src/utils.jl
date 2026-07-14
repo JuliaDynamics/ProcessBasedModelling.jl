@@ -1,3 +1,5 @@
+import Symbolics
+
 """
     LiteralParameter(p)
 
@@ -58,27 +60,25 @@ The difference with `ModelingToolkit.getdefault` is that this function will
 not error on the absence of a default value.
 """
 default_value(x) = x
-default_value(x::Num) = default_value(x.val)
-function default_value(x::ModelingToolkitBase.Symbolic)
-    if haskey(x.metadata, ModelingToolkitBase.Symbolics.VariableDefaultValue)
-        return x.metadata[ModelingToolkitBase.Symbolics.VariableDefaultValue]
-    else
-        @warn("No default value assigned to variable/parameter $(x).")
-        return nothing
-    end
+default_value(x::Num) = default_value(Symbolics.unwrap(x))
+function default_value(x::Symbolics.SymbolicT)
+    val = Symbolics.getdefaultval(x)
+    isnothing(val) && @warn("No default value assigned to variable/parameter $(x).")
+    return val
 end
+
 # trick to get default values for state variables:
 # Base.Fix1(getindex, ModelingToolkit.defaults(ssys)).(states(ssys))
 # while `defaults` returns all default assignments.
 
-is_variable(x::Num) = is_variable(x.val)
+is_variable(x::Num) = is_variable(Symbolics.unwrap(x))
 function is_variable(x)
-    if x isa ModelingToolkitBase.Symbolic
+    if x isa Symbolics.SymbolicT
         if isnothing(x.metadata)
             return false
         end
-        if haskey(x.metadata, ModelingToolkitBase.Symbolics.VariableSource)
-            src = x.metadata[ModelingToolkitBase.Symbolics.VariableSource]
+        if haskey(x.metadata, Symbolics.VariableSource)
+            src = x.metadata[Symbolics.VariableSource]
             return first(src) == :variables
         end
     end
@@ -134,7 +134,7 @@ Convert all variables `vars` into `@parameters` with name the same as `vars`
 and default value the same as the value of `vars`. The macro leaves unaltered
 inputs that are of type `Num`, assumming they are already parameters.
 It also replaces [`LiteralParameter`](@ref) inputs with its literal values.
-This macro is extremely useful to convert e.g., keyword arguments into named parameters,
+This macro is useful to convert e.g., keyword arguments into named parameters,
 while also allowing the user to give custom parameter names,
 or to leave some keywords as numeric literals.
 
