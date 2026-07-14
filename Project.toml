@@ -1,7 +1,7 @@
 name = "ProcessBasedModelling"
 uuid = "ca969041-2cf3-4b10-bc21-86f4417093eb"
 authors = ["Datseris <datseris.george@gmail.com>"]
-version = "1.8.0"
+version = "1.9.0"
 
 [deps]
 ModelingToolkitBase = "7771a370-6774-4173-bd38-47e70ca0b839"

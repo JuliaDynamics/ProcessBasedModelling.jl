@@ -3,6 +3,11 @@
 ProcessBasedModelling.jl follows semver 2.0.
 Changelog is kept with respect to v1 release.
 
+## 1.9
+
+Dependency moved from ModelingToolkit.jl to ModelingToolkitBase.jl, moving in the process to MTK v11.
+ProcessBasedModelling.jl was not using any of the advanced functionality of the AGPL licensed MTK parts so this was safe to do.
+
 ## 1.8
 
 - Updated to ModelingToolkit.jl v10. `type` keyword in `processes_to_mtkmodel` is now no longer used.

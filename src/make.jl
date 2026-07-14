@@ -18,7 +18,7 @@ During construction, the following automations improve user experience:
 
 `processes` is a `Vector` whose elements can be:
 
-1. Any instance of a subtype of [`Process`](@ref). `Process` is like a
+1. Any instance of a subtype of [`Process`](@ref). `Process` is a
    wrapper around `Equation` that provides some conveniences, e.g., handling of timescales
    or not having limitations on the left-hand-side (LHS) form.
 1. An `Equation`. The LHS format of the equation is limited.
@@ -28,7 +28,7 @@ During construction, the following automations improve user experience:
 2. A `Vector` of the above two, which is then expanded. This allows the convenience of
    functions representing a physical process that may require many equations to be defined
    (because e.g., they may introduce more variables).
-3. A ModelingToolkit.jl `XDESystem`, in which case the `equations` of the system are expanded
+3. A ModelingToolkit.jl `System`, in which case the `equations` of the system are expanded
    as if they were given as a vector of equations like above. This allows the convenience
    of straightforwardly coupling with already existing `XDESystem`s.
 
@@ -59,7 +59,7 @@ These registered default processes are used when `default` is a `Module`.
   (has happened to me many times!).
 """
 function processes_to_mtkmodel(args...;
-        type = System, name = :model, independent = t, kw...,
+        name = :model, independent = t, kw...,
     )
     eqs = processes_to_mtkeqs(args...; kw...)
     sys = System(eqs, independent; name)
